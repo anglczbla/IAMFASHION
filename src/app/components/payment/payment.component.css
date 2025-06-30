@@ -1,0 +1,165 @@
+/* Container styling */
+.container {
+  max-width: 960px;
+  margin: auto;
+  padding: 0 15px;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+.modal-body form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+/* Headings */
+h2.text-success {
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+}
+
+h3, h4 {
+  color: #2c662d;
+  font-weight: 700;
+}
+
+/* Modal header */
+.modal-header {
+  background-color: #e9f5ea;
+  border-bottom: 1px solid #c3e6cb;
+}
+
+.modal-header .modal-title {
+  color: #2c662d;
+  font-weight: 700;
+}
+
+/* Form labels */
+.form-label {
+  font-weight: 600;
+  color: #2c662d;
+}
+
+/* Input fields & selects */
+.form-control,
+.form-select {
+  border: 1.5px solid #2c662d;
+  border-radius: 5px;
+  transition: border-color 0.3s ease;
+}
+
+.form-control:focus,
+.form-select:focus {
+  border-color: #66bb6a;
+  box-shadow: 0 0 5px rgba(102, 187, 106, 0.6);
+}
+
+/* Shipping section */
+.shipping-section {
+  background-color: #f6fbf7;
+  padding: 15px 20px;
+  border: 1px solid #c3e6cb;
+  border-radius: 8px;
+  margin-bottom: 20px;
+}
+
+/* Radio and checkbox inputs */
+.form-check-input {
+  border: 1.5px solid #2c662d;
+  transition: 0.3s ease;
+}
+
+.form-check-input:checked {
+  background-color: #2c662d;
+  border-color: #2c662d;
+}
+
+/* Card-box for payment info */
+.card-box {
+  background-color: #f6fbf7;
+  border: 1px solid #c3e6cb;
+  border-radius: 8px;
+  padding: 15px 20px;
+  margin-bottom: 20px;
+}
+
+.card-box h4 {
+  margin-bottom: 10px;
+}
+
+/* Payment method box */
+.payment-method-box {
+  background-color: #dff0d8;
+  padding: 12px 15px;
+  border-radius: 6px;
+  border: 1px solid #b2dba1;
+}
+
+/* Payment icons */
+.payment-icons img {
+  max-height: 30px;
+  margin-right: 10px;
+  vertical-align: middle;
+}
+
+/* Payment cards */
+.card {
+  border-radius: 8px;
+  border: 1px solid #c3e6cb;
+  transition: box-shadow 0.3s ease;
+}
+
+.card:hover {
+  box-shadow: 0 4px 15px rgba(44, 102, 45, 0.3);
+}
+
+.card-body {
+  color: #2c662d;
+}
+
+.card-title {
+  font-weight: 700;
+  font-size: 1.25rem;
+}
+
+.card-text strong {
+  color: #3a7d3a;
+}
+
+/* Buttons */
+button.btn-success {
+  font-weight: 600;
+  transition: background-color 0.3s ease;
+}
+
+button.btn-success:hover {
+  background-color: #2a7a2a;
+}
+
+.btn-warning {
+  background-color: #ffc107;
+  border-color: #ffc107;
+  font-weight: 600;
+  transition: background-color 0.3s ease;
+}
+
+.btn-warning:hover {
+  background-color: #e0a800;
+  border-color: #d39e00;
+}
+
+.btn-danger {
+  font-weight: 600;
+}
+
+/* Responsive tweaks */
+@media (max-width: 576px) {
+  .payment-icons img {
+    max-height: 24px;
+    margin-right: 6px;
+  }
+
+  .card-title {
+    font-size: 1.1rem;
+  }
+}

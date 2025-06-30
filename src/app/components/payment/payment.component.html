@@ -1,0 +1,426 @@
+<!-- Modal untuk Tambah Pembayaran (Akses untuk Semua Pengguna) -->
+<div
+  id="addPaymentModal"
+  class="modal fade"
+  tabindex="-1"
+  aria-labelledby="addPaymentLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog">
+    <form
+      class="modal-content"
+      [formGroup]="paymentForm"
+      (ngSubmit)="submitPayment()"
+    >
+      <div class="modal-header">
+        <h5 class="modal-title" id="addPaymentLabel">Add Payment</h5>
+        <button
+          type="button"
+          class="btn-close"
+          (click)="routerNavigate()"
+          aria-label="Close"
+        ></button>
+      </div>
+
+      <div class="modal-body">
+        <h3>Delivery</h3>
+
+        <div class="mb-3">
+          <label for="country" class="form-label">Country/Region</label>
+          <select id="country" class="form-select" formControlName="country">
+            <option value="Indonesia">Indonesia</option>
+          </select>
+          <div
+            *ngIf="
+              paymentForm.get('country')?.touched &&
+              paymentForm.get('country')?.invalid
+            "
+            class="text-danger"
+          >
+            Country is required.
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-md-6 mb-3">
+            <label for="firstName" class="form-label">First Name</label>
+            <input
+              type="text"
+              id="firstName"
+              class="form-control"
+              formControlName="firstName"
+              [class.is-invalid]="
+                paymentForm.get('firstName')?.touched &&
+                paymentForm.get('firstName')?.invalid
+              "
+            />
+            <div
+              *ngIf="
+                paymentForm.get('firstName')?.touched &&
+                paymentForm.get('firstName')?.invalid
+              "
+              class="text-danger"
+            >
+              First name is required.
+            </div>
+          </div>
+          <div class="col-md-6 mb-3">
+            <label for="lastName" class="form-label">Last Name</label>
+            <input
+              type="text"
+              id="lastName"
+              class="form-control"
+              formControlName="lastName"
+              [class.is-invalid]="
+                paymentForm.get('lastName')?.touched &&
+                paymentForm.get('lastName')?.invalid
+              "
+            />
+            <div
+              *ngIf="
+                paymentForm.get('lastName')?.touched &&
+                paymentForm.get('lastName')?.invalid
+              "
+              class="text-danger"
+            >
+              Last name is required.
+            </div>
+          </div>
+        </div>
+
+        <div class="mb-3">
+          <label for="address" class="form-label">Address</label>
+          <input
+            type="text"
+            id="address"
+            class="form-control"
+            formControlName="address"
+            [class.is-invalid]="
+              paymentForm.get('address')?.touched &&
+              paymentForm.get('address')?.invalid
+            "
+          />
+          <div
+            *ngIf="
+              paymentForm.get('address')?.touched &&
+              paymentForm.get('address')?.invalid
+            "
+            class="text-danger"
+          >
+            Address is required.
+          </div>
+        </div>
+        <div class="mb-3">
+          <label for="apartment" class="form-label"
+            >Apartment, suite, etc. (optional)</label
+          >
+          <input
+            type="text"
+            id="apartment"
+            class="form-control"
+            formControlName="apartment"
+          />
+        </div>
+        <div class="mb-3">
+          <label for="city" class="form-label">City</label>
+          <input
+            type="text"
+            id="city"
+            class="form-control"
+            formControlName="city"
+            [class.is-invalid]="
+              paymentForm.get('city')?.touched &&
+              paymentForm.get('city')?.invalid
+            "
+          />
+          <div
+            *ngIf="
+              paymentForm.get('city')?.touched &&
+              paymentForm.get('city')?.invalid
+            "
+            class="text-danger"
+          >
+            City is required.
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-md-6 mb-3">
+            <label for="province" class="form-label">Province</label>
+            <select
+              id="province"
+              class="form-select"
+              formControlName="province"
+              [class.is-invalid]="
+                paymentForm.get('province')?.touched &&
+                paymentForm.get('province')?.invalid
+              "
+            >
+              <option value="">Select Province</option>
+              <option *ngFor="let province of provinces" [value]="province">
+                {{ province }}
+              </option>
+            </select>
+            <div
+              *ngIf="
+                paymentForm.get('province')?.touched &&
+                paymentForm.get('province')?.invalid
+              "
+              class="text-danger"
+            >
+              Province is required.
+            </div>
+          </div>
+          <div class="col-md-6 mb-3">
+            <label for="postalCode" class="form-label">Postal Code</label>
+            <input
+              type="text"
+              id="postalCode"
+              class="form-control"
+              formControlName="postalCode"
+              [class.is-invalid]="
+                paymentForm.get('postalCode')?.touched &&
+                paymentForm.get('postalCode')?.invalid
+              "
+            />
+            <div
+              *ngIf="
+                paymentForm.get('postalCode')?.touched &&
+                paymentForm.get('postalCode')?.invalid
+              "
+              class="text-danger"
+            >
+              Postal code is required and must be 5 digits.
+            </div>
+          </div>
+        </div>
+
+        <div class="mb-3">
+          <label for="phone" class="form-label">Phone</label>
+          <input
+            type="tel"
+            id="phone"
+            class="form-control"
+            formControlName="phone"
+            [class.is-invalid]="
+              paymentForm.get('phone')?.touched &&
+              paymentForm.get('phone')?.invalid
+            "
+          />
+          <div
+            *ngIf="
+              paymentForm.get('phone')?.touched &&
+              paymentForm.get('phone')?.invalid
+            "
+            class="text-danger"
+          >
+            Phone is required and must be a valid number (10-15 digits).
+          </div>
+        </div>
+        <h4>Payment</h4>
+
+        <div class="mb-3">
+          <label for="amount" class="form-label">Jumlah Pembayaran</label>
+          <input
+            type="number"
+            id="amount"
+            class="form-control"
+            formControlName="amount"
+            readonly
+          />
+        </div>
+
+        <div class="mb-3">
+          <label for="proofFile" class="form-label">Bukti Pembayaran</label>
+          <input
+            type="file"
+            class="form-control"
+            id="proofFile"
+            accept="image/*,.pdf"
+            (change)="onFileSelected($event)"
+          />
+
+          <!-- Preview area -->
+          <div *ngIf="previewUrl" class="mt-2">
+            <img
+              [src]="previewUrl"
+              alt="Preview"
+              class="img-thumbnail"
+              style="max-width: 200px"
+            />
+            <button
+              type="button"
+              class="btn btn-sm btn-danger ms-2"
+              (click)="removeSelectedFile()"
+            >
+              Remove
+            </button>
+          </div>
+        </div>
+
+        <p class="text-muted">All transactions are secure and encrypted.</p>
+
+        <div class="payment-method-box mb-3">
+          <div class="payment-icons my-2">
+            <img
+              src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAOEAAADhCAMAAAAJbSJIAAABAlBMVEX///8AM5n+/v4AMJgANZoAL5gAQqMALJcAJpUANJoAGZIAN5sAKZYAAIvS3O4AAIYAIJMAAIGBl8muv9/4+v0xUKUAH5MAAH7u8fgAJJXd4u8ALZoAD4zm6vT09vsxV6pyh8DBzOWxudmkstZ+j8K1xOG/xuQACI4AE4uXqNFngb4AGoxac7aKnc0vNJLN1epAWqlSV6EdSqZsd7ZefL1KabJBUKJ/h72WoctBYa+IksaSnMtXY6saHYs4QZxKU6R9froqLZKcr9czXq8AJKGRn8OxstheYKsfQ59iZai7vd/DytpdaatRWZ55hcA+RZprbK48SJMAAGWGi7QVKIVpcquG3Gl3AAANNElEQVR4nO2bC3eiSBbHCwFBAVGDBgkQBd8vEo3RRNs8eied7k2bmZ2d7/9VtnhJgegMPTOnp/fc35kzpyMlqX/dqvuCIAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPB/j9Z5nrSbQ5dmuzrolJTvPaO/jJyqWcNZXfKQdV3v+f8s5m+eNePH12l0JgtRlnXudr5cWZhuF/9vdT9/oIuyXL9rn2nfe4p/ilb7jqtUilf3jmaYpLkU0zBK602jUmlcNjvfbX5/EsO+lKTR9X03/CAXEX7krDcfpF5+ouXS7/FPRhvUdGl731XdH5LCiJ+V1vpBkvKT0neb6TdSuiyeTwdGjrQcltOdLJfrLwrxKR6rWreV3sz63lPOyGXxwdud5M5UH6WKjKnIj1piy5Y+Fxt/xzT+Pldt6KwWk4d1lN5ljhEY/B+nT18SF9Xb3jGHo5iK8o3HVGk63yzhd5hIOyWhwXjimQLlUSiI593E5ZU0PDLLu8V4PL4ZNpvNdrtanUwGg8Hzc+cPBRmn99pOmFFxSgeY2QWqd/2kAlQXBWpPgX1yYgNQaTpLX+92ncOILrxHw6WuFyZG6q82WvYE507tycDuLDi6QQ1i42p6MYlkZ1fYKTyoCYWDc0IgRQn9RyV+Ft/6qb9Iq7FUKjR/ebCvc85gPGuUG95qNMplzht314rs2Coe3qkxyK5wJe8SAs1rnolPsK+hxBIM03bLSkwXiOEKrfjY0nAmcvThOGEcDlTGF4f34auZBRofK05CYfeDEL9tQb+PKzQlJuVslYTDGUdTr5HfUKs9MX0wzUmBue20DXExzqywVK4nHamlx01IMaPbRJZTk1JCYpM/LpCiRGJ/OYsj+lyJgr891Dsu5Sp7l1nhQN4kFdoHCnkuMWQt3xzcSS2fEkhxC3UvMH98O1PliT/IaqRdZS8zK/yIrZGLT//QhvwFSnjT+sXBnYbktGnPoYqEGeh8uE3PmDTr7If57jT3ryOXMyus81pS4cE5ZEabZMB87yUPovNKbDy61vYYF6LPLoII48xOCKTEICj+lGpCfD2rwJL0YCQVqu9iIX5b2Uq623kyMClV0oRiEykuJmFY0VeovJ4SSAu+n9EujxzUopqU8Ds8S0slllqjw3hY4K9xxPSvhQMHUjN+o5ZOur56GP6MfUyjBc/qufFJf8SNPRMqzWOHupi1Cm9jW0TzVkqOt0RTnpQojNzEXHHca/ud3B/HU6xJlTRicZ+b0KEt2EvvM/tERMGU/a2hDibE3Wg2cgz1RFz9PXJjfb8BEXrZbKcPOzwRRyYFVubIvTad3q7NYDBynq7iiZiJOtGys5E/YEJFfNONAuosGeVo1k3zONYfVw/mhZ6Jc1hoRl+qZ+wyGFf7nBOpn87LNM3L8r2KLJkJl43pb5HyRarUaUqshKORcfuaTE3bxJHbZ+b7EBIcsMQepUV6dvU2HA4XV6+u421MwonVIls3BsTi8RnTttJsG7hSZH7WGbw3GYGWrw20rgQSGX6r5ZYVTsA/FgR+5A9H5oZNLKa5iBa6sc8HzsK5cQvXhKV4qsnnh7bj9fAUnIQvRFYIT5kdZWx0wRhE68JPUCZaQph2Y03B2SswOpZ41ff8KVPAh3DepwLnKow++44JzYuJrKYUrTq9z+mUceg4e975icVMkW8aZHqrdvib4Gd1ETlcvomqhMKMiWmnPPa9B8rhkje8i6Bfq+aDl34zFQvdnwvRpSBwoLacCBedKCvlxprhod0EiuiLqr+g0d6j+fFBSZULV8aKbE3jSo1QyDWzKTzTm4EJWxUikWHke+xLXHvqc9T6QERHRl/7CtfyKl7MDyLz0K8fL10+7rMzrultxXY0U/oiWe+SEP4Ih9aYwnG2HoIlBaUT+hJTSFc0tJMFiqU1XEuRCov33jZFq0o1NkMytmP/SLsE/pFie74aIx9tZLF6Yqb/JlI2N3kiFW6yVfm23A4djUwEHVz0viFF4gTdRi8ymeAIQXRBdqUZU2gcq36xwKvAKVWjCMAd6YP4jIlT6A4kFLJXqe2CEwqDyg+h6xGphHlqobsRvS0hOlYOs4HvdRXGFrN0VCDFLoLjlSfC2qnUpJXfj6OFUkJhLVu3dq8Qx3CZVFLQV7iKGo2RU4mZ8DxckaTC5yOZsmewmjdEi9wH+/HEpBQisja8/U0opI+0iP6AQvRSEQgx3K2qNSoDfBpjm/cdoXQbLoiWA03hQ0ixUZXb8PbkIFqExqmoViJ81syzGKkwny1ts+VlYBMceNcVOkpH2bpmbCsO2bNh3ECpOL6nea7EfSERB/jJmfvkymrvP/OnRfiikw0lsh5poqRCIVvaZklhtNh9VdFKltlCmK7plvkmK6VpqI5h++dzEy2/GoEvnZAKDSJZCXJLpETNMh4vh0lE8VMKTeJWkpFUSFHZHil0isNQ4TlOXtT7d7GviwXGrXrnaNlD1sg1q0D3+6PtvIW0h/Otr7AqxyZpE24yaqUMQ03sq4FLPiLInXClzciEXJDATAiFXLaOaUd8C7OwPisvHWS0rMFtnylghXdoxfsdDWEkrq2uhtTV04ia+grb8RKYcA5E5hjp5h0yrcPn6+iUNGJYwe6cYTo3RNHMrzIpbOWDEh8rFKjR09x14urjOVUoNPLIzqNVn8GZ2oN73s31g0QXWE8hwnnpGXEf5Y2IYJGzixTius+ZEaXh8WhB5Nw41fd8X6weF0/lQmkLhiOep3CJMximoFe2a81Aqye6wDfQyxVaFhmmv1RUzfok4wLD9bGeQvVaIH1aKYr3QaXrEa19+RnXMYTCo8nXicwhUJjajD6Kese3fIVfzv0Dx+v97c/2nciIRWRt0GO9wNGD5UO9N/IKKEH3uh5I287IyEuk3cQMlIv9p2WLXAXXPJN0idbpnqS7Ntk6NTdhrYCoc1rAHlMQcNbfZ5mCqCNrnpuXsW8d1TmK8S+OPngrglriHZk9PUebVIzOJxEAL0rIuCMV0kw7PpNgXV5PdzncnnA2hRNpFThTZTnVA+o0lsX10Je5MsdLWsCSgytPn4KkzdJJb2jO9wqJnMMuRPWUux7DWJONbsxsTVWUnKKohmYv/BbzWcrTmDh0LVtieibNzTAzLVn2ynbfL3nkdE7ANuw2sUJswuJmjT92L7bCXtRaIrMS45I4hp2Wz4RIQ0V3Tw4SiR3N58fN6rrdHNeYuu+fUp/GJL71mk2hIW2Nfd62N4m2lvucjlpVZc7zlU+GGl0MejpvscfAGjED4dUnTzxZor2mjtY7mC3nPmd021BBz58skSl2T2znChn7iXk98ejJ12p+7kvIec7tzq8dhJIjkMYWSY/2TLoHOoD4KEhDF8cfV1x4p9ccEqFdqIVc5smbiRlfBRnK6wOFfiJ+i0od5de1mnIZdXs18iY3p9rYbm3hhzCHPeZGgprIIa6LbS18sq21yaUpZ+wnduRZmkIsUUUGTmMO7OfnB3LME85OOkBOCJxPrn0sFHC+nyFy7liGTWZtVCPjg25jJicfXIQy/MOXqr5YJreKcdIBilHNqh5r6ft9XqMXlW9+9zEglnln7SeaTVwEEgcw/hQtJiv6Z6sSi4Zn9RMCeTI10GrpR5H1rpKbMVZBxhQGFdUfxy6+hZNH6nLpv/kVezsqsGX0FA615VhGMjn+sIWuL2KuT7urp+xov9Qgiw9KJ78WU8hlfdCtXfppituq/+W35bv2du8gM9ij7ttfOEtzVgZa/2ff/9e2sUI7Nz7maDi2dpb4dcrgVTzIPFlPDtGPTDzrjSs81QFJZSgF3hR1NorVtd+tqb3DWYazWmFPYz3utNbD7t18XO5zA6tHHhKccHL0ISzXuBjbKbHLqc7q8SXxU02NvE095k5iCk9UXkdoSVvfYyLrN3T16+rJ2jZfDWs3/nlJIUc2ft1tXpCB3nb/9Toe2Aw/67Hqt5VPY7aYlNIzSMUY3PHFBo70PmLRu91AJL4dT82aejmiLmVViGb6gz8X9bfb4a/z3S8rY6uuVs1dm0bG7dW09bBC3c7D7stXd2+axlxv/OlXTBXnuTocLzabzWLc9N+YOlH2lewzguyvRXWEXnHz4hW51ovxVbN+0Sht/lNzg3epcmt3n1rXP+nYvshQkWbPy9LFN7yYlIZimqr5rW/6ZaLUruvSdP7sGdJQlHv1cTo1rl9cT7N5v92gLq798cnLWbt3qafftH7Ad9oVe/yqn0vvSyfIsrEezfSKec2TYxra+gqPyI+fs74q8E8h59jDvCTr07e11S0Rz/UUQ+taq7dtUZLZ8eBHNF+EqXWGefcvLEbT981Nc3d/f7/cDTfv2w/u31ywN7hg/d5T/CtQO5PhovZK1XX3JWi5V6TztcWw+oP/qUUSU3NanTPLtnHF3+k4/x+mAwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADgx+R/vJlI6t3LfSYAAAAASUVORK5CYII="
+              alt="BCA"
+            />
+            <img
+              src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/04/Mastercard-logo.png/120px-Mastercard-logo.png"
+              alt="Mastercard"
+            />
+            <img
+              src="data:image/png;base64,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"
+              alt="BNI"
+            />
+            <span class="text-primary">+21</span>
+          </div>
+          <p class="text-muted">
+            After clicking "Pay now", you will be redirected to Payments via
+            Midtrans to complete your purchase securely.
+          </p>
+        </div>
+
+        <div class="form-check">
+          <input
+            class="form-check-input"
+            type="radio"
+            formControlName="paymentMethod"
+            name="paymentMethod"
+            id="manualBank"
+            value="manualBank"
+          />
+          <label class="form-check-label" for="manualBank">
+            BCA bank transfer with manual confirmation(11401010)
+          </label>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button
+          type="button"
+          class="btn btn-secondary"
+          (click)="routerNavigate()"
+        >
+          Cancel
+        </button>
+        <button type="submit" class="btn btn-success" [disabled]="isSubmitting">
+          {{ isSubmitting ? "Processing..." : "Pay Now" }}
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Daftar Pembayaran (Hanya untuk Admin) -->
+<div class="container mt-5" *ngIf="userRole === 'admin'">
+  <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4 mt-3">
+    <div class="col" *ngFor="let payment of payments">
+      <div class="card shadow-sm h-100">
+        <div class="card-body d-flex flex-column">
+          <h5 class="card-title">Payment For:</h5>
+          <p class="card-text mb-4">
+            <strong>Order:</strong> {{ payment.orders_id?.nama || payment.orders_id }}<br />
+            <strong>Country:</strong> {{ payment.country }}<br />
+            <strong>First Name:</strong> {{ payment.firstName }}<br />
+            <strong>Last Name:</strong> {{ payment.lastName }}<br />
+            <strong>Address:</strong> {{ payment.address }}<br />
+            <strong>Apartment, etc:</strong> {{ payment.apartment || "-" }}<br />
+            <strong>City:</strong> {{ payment.city }}<br />
+            <strong>Province:</strong> {{ payment.province }}<br />
+            <strong>Postal Code:</strong> {{ payment.postalCode }}<br />
+            <strong>Phone:</strong> {{ payment.phone }}<br />
+            <strong>Amount:</strong> Rp{{ payment.amount | number : "1.0-0" }}<br />
+            <strong>Metode:</strong> {{ payment.paymentMethod }}<br />
+            <strong>Status:</strong>
+            <span
+              [ngClass]="{
+                'text-success': payment.status === 'berhasil' || payment.status === 'confirmed',
+                'text-warning': payment.status === 'pending',
+                'text-danger': payment.status === 'gagal' || payment.status === 'failed'
+              }"
+            >
+              {{ payment.status === 'confirmed' ? 'Dikonfirmasi' : 
+                 payment.status === 'failed' ? 'Ditolak' : 
+                 payment.status | titlecase }}
+            </span><br />
+            <strong>Date:</strong> {{ payment.paymentDate | date : "short" }}
+            <button
+              *ngIf="payment.proof"
+              class="btn btn-sm btn-info me-1"
+              (click)="viewProof(payment.proof)"
+            >
+              View Proof
+            </button>
+            <span *ngIf="!payment.proof" class="text-muted">No proof</span>
+          </p>
+          <!-- Tambahkan tombol Konfirmasi dan Tolak di dalam card -->
+          <div class="mt-auto d-flex justify-content-between align-items-center">
+            <ng-container>
+              <button 
+                class="btn btn-sm btn-success me-2"
+                (click)="updatePaymentStatus(payment._id, 'confirmed')"
+                [disabled]="payment.status === 'confirmed' || payment.status === 'berhasil'">
+                Konfirmasi
+              </button>
+              <button 
+                class="btn btn-sm btn-danger"
+                (click)="updatePaymentStatus(payment._id, 'failed')"
+                [disabled]="payment.status === 'failed' || payment.status === 'gagal'">
+                Tolak
+              </button>
+            </ng-container>
+            <div>
+              <button
+                type="button"
+                class="btn btn-warning mt-3 me-2"
+                [routerLink]="['/shipping']"
+              >
+                Tracking
+              </button>
+              <button class="btn btn-danger" (click)="deletePayment(payment._id)">
+                Hapus
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div
+    *ngIf="payments.length === 0 && userRole === 'admin'"
+    class="alert alert-info mt-4"
+    role="alert"
+  >
+    Belum ada data pembayaran yang tersedia.
+  </div>
+</div>
+<div
+  *ngIf="userRole !== 'admin'"
+  class="alert alert-info mt-4 text-center"
+  role="alert"
+>
+  Anda tidak memiliki izin untuk melihat daftar pembayaran.
+</div>
+
+<!-- Notifikasi untuk User
+<div *ngIf="userRole !== 'admin'" class="mt-3">
+  <div class="card">
+    <div class="card-header">
+      <h6>Status Payment Terbaru</h6>
+    </div>
+    <div class="card-body">
+      <div *ngFor="let payment of userPayments.slice(0, 3)" class="d-flex justify-content-between align-items-center mb-2">
+        <span>Order #{{ payment.orders_id }}</span>
+        <span class="badge" 
+              [class.bg-success]="payment.status === 'confirmed'"
+              [class.bg-danger]="payment.status === 'failed'"
+              [class.bg-warning]="payment.status === 'pending'">
+          {{ payment.status === 'confirmed' ? 'Dikonfirmasi' : 
+             payment.status === 'failed' ? 'Ditolak' : 'Pending' }}
+        </span>
+      </div>
+    </div>
+  </div>
+</div> -->

@@ -1,0 +1,103 @@
+/* Custom CSS for Soft Pink and Orange Theme */
+body {
+  background-color: #fff7f5; /* Very light pink background for warmth */
+  font-family: 'Poppins', sans-serif; /* Modern, clean font */
+  color: #333333; /* Dark gray for high text readability */
+}
+
+.container.mt-4 {
+  background-color: #ffffff; /* White container for contrast */
+  border-radius: 12px; /* Slightly rounded corners */
+  padding: 2rem;
+  box-shadow: 0 4px 15px rgba(255, 147, 112, 0.15); /* Subtle orange-tinted shadow */
+  max-width: 800px; /* Limit width for readability */
+  margin: 2rem auto; /* Center the container */
+}
+
+.text-primary {
+  color: #ff7043 !important; /* Vibrant orange for primary text (e.g., "History" heading) */
+}
+
+h2.text-center {
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid #ffe0d6; /* Light orange border under heading */
+  margin-bottom: 2rem;
+}
+
+h3 {
+  color: #ff8a65; /* Softer orange for section headings */
+  font-weight: 500;
+  margin-top: 2rem;
+  margin-bottom: 1rem;
+}
+
+.card.shadow-sm {
+  border: none; /* Remove default border */
+  border-radius: 10px; /* Rounded corners for cards */
+  background: linear-gradient(135deg, #fff7f5 0%, #fff1ed 100%); /* Subtle pink-to-orange gradient */
+  transition: transform 0.3s ease, box-shadow 0.3s ease; /* Smooth hover effects */
+}
+
+.card.shadow-sm:hover {
+  transform: translateY(-5px); /* Slight lift on hover */
+  box-shadow: 0 8px 20px rgba(255, 147, 112, 0.25); /* Enhanced orange shadow on hover */
+}
+
+.card-body {
+  padding: 1.5rem;
+}
+
+.card-text {
+  color: #444444; /* Darker gray for card text readability */
+  line-height: 1.6; /* Improved readability */
+}
+
+.card-text strong {
+  color: #ff7043; /* Orange for emphasis to match headings */
+}
+
+.alert {
+  border-radius: 10px; /* Rounded corners for alerts */
+  border: none; /* Remove default border */
+}
+
+.alert-danger {
+  background-color: #fff1ed; /* Light orange-pink for error alerts */
+  color: #d9534f; /* Bootstrap's danger color for contrast */
+}
+
+.alert-info {
+  background-color: #fef6e7; /* Light orange for info alerts */
+  color: #31708f; /* Bootstrap's info color for contrast */
+}
+
+.alert-link {
+  color: #ff7043; /* Orange link color in alerts */
+  text-decoration: underline;
+}
+
+.alert-link:hover {
+  color: #f4511e; /* Darker orange on hover */
+}
+
+/* Responsive adjustments */
+@media (max-width: 576px) {
+  .container.mt-4 {
+    padding: 1.5rem;
+    margin: 1rem;
+  }
+
+  h2.text-center {
+    font-size: 1.5rem;
+  }
+
+  h3 {
+    font-size: 1.2rem;
+  }
+
+  .card-body {
+    padding: 1rem;
+  }
+}

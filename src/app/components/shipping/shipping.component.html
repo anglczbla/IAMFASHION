@@ -1,0 +1,340 @@
+<div class="container-fluid py-4">
+  <div class="row">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-header d-flex justify-content-between align-items-center">
+          <h5 class="mb-0">📦 Shipping Management</h5>
+          <div class="d-flex gap-2">
+            <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#addShippingModal">
+              ➕ Add Shipping
+            </button>
+          </div>
+        </div>
+
+        <div class="card-body">
+          <!-- Loading State -->
+          <div *ngIf="isLoading" class="text-center py-5">
+            <div class="spinner-border text-primary" role="status">
+              <span class="visually-hidden">Loading...</span>
+            </div>
+            <p class="mt-2">Loading shipping data...</p>
+          </div>
+
+          <!-- Shipping Table -->
+          <div *ngIf="!isLoading" class="table-responsive">
+            <table class="table table-striped table-hover">
+              <thead class="table-dark">
+                <tr>
+                  <th scope="col">No</th>
+                  <th scope="col">Address (User)</th>
+                  <th scope="col">Shipping Date</th>
+                  <th scope="col">Origin</th>
+                  <th scope="col">Destination</th>
+                  <th scope="col">Weight (g)</th>
+                  <th scope="col">Courier</th>
+                  <th scope="col">Waybill</th>
+                  <th scope="col">Status</th>
+                  <th scope="col">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let ship of shipping; let i = index">
+                  <td>{{ i + 1 }}</td>
+                  <td>
+                    <span class="text-muted">
+                      {{ ship.payment_id.address }} ({{ ship.payment_id.firstName }} {{ ship.payment_id.lastName }})
+                    </span>
+                  </td>
+                  <td>{{ ship.shippingDate | date : "dd/MM/yyyy HH:mm" }}</td>
+                  <td>
+                    <span class="badge bg-light text-dark">
+                      {{ getCityName(ship.origin) }}
+                    </span>
+                  </td>
+                  <td>
+                    <span class="badge bg-light text-dark">
+                      {{ getCityName(ship.destination) }}
+                    </span>
+                  </td>
+                  <td>
+                    <span class="fw-bold">{{ ship.weight }}</span>g
+                  </td>
+                  <td>
+                    <span class="badge bg-info">
+                      {{ getCourierName(ship.courier) }}
+                    </span>
+                  </td>
+                  <td>
+                    <span *ngIf="ship.waybill" class="text-primary fw-bold">
+                      {{ ship.waybill }}
+                    </span>
+                    <span *ngIf="!ship.waybill" class="text-muted">
+                      Not assigned
+                    </span>
+                  </td>
+                  <td>
+                    <span [class]="getStatusBadgeClass(ship.status)">
+                      {{ getStatusLabel(ship.status) }}
+                    </span>
+                  </td>
+                  <td>
+                    <div class="btn-group" role="group">
+                      <button
+                        class="btn btn-outline-warning btn-sm"
+                        (click)="getShippingById(ship._id)"
+                        title="Edit Shipping"
+                      >
+                        ✏️ Edit
+                      </button>
+                      <button
+                        class="btn btn-outline-danger btn-sm"
+                        (click)="deleteShipping(ship._id)"
+                        title="Delete Shipping"
+                      >
+                        🗑️ Delete
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+
+            <!-- Empty State -->
+            <div *ngIf="shipping.length === 0" class="text-center py-5">
+              <div class="text-muted">
+                <i class="fas fa-box-open fa-3x mb-3"></i>
+                <p>No shipping records found</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Add Shipping Modal -->
+<div class="modal fade" id="addShippingModal" tabindex="-1" aria-labelledby="addShippingModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="addShippingModalLabel">➕ Add New Shipping</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <form [formGroup]="shippingForm" (ngSubmit)="addShipping()">
+        <div class="modal-body">
+          <div class="row">
+            <!-- Payment Selection -->
+            <div class="col-md-6 mb-3">
+              <label for="payment_id" class="form-label">Address (User) *</label>
+              <select class="form-select" id="payment_id" formControlName="payment_id" required>
+                <option value="">Select Payment</option>
+                <option *ngFor="let payment of payments" [value]="payment._id">
+                  {{ payment.address }} ({{ payment.firstName }} {{ payment.lastName }})
+                </option>
+              </select>
+              <div *ngIf="shippingForm.get('payment_id')?.invalid && shippingForm.get('payment_id')?.touched" class="text-danger">
+                Payment is required
+              </div>
+            </div>
+
+            <!-- Shipping Date -->
+            <div class="col-md-6 mb-3">
+              <label for="shippingDate" class="form-label">Shipping Date</label>
+              <input type="datetime-local" class="form-control" id="shippingDate" formControlName="shippingDate" />
+            </div>
+
+            <!-- Origin -->
+            <div class="col-md-6 mb-3">
+              <label for="origin" class="form-label">Origin City *</label>
+              <select class="form-select" id="origin" formControlName="origin" required>
+                <option value="">Select Origin</option>
+                <option *ngFor="let city of cityList" [value]="city.id">{{ city.name }}</option>
+              </select>
+              <div *ngIf="shippingForm.get('origin')?.invalid && shippingForm.get('origin')?.touched" class="text-danger">
+                Origin is required
+              </div>
+            </div>
+
+            <!-- Destination -->
+            <div class="col-md-6 mb-3">
+              <label for="destination" class="form-label">Destination City *</label>
+              <select class="form-select" id="destination" formControlName="destination" required>
+                <option value="">Select Destination</option>
+                <option *ngFor="let city of destinationList" [value]="city.id">{{ city.name }}</option>
+              </select>
+              <div *ngIf="shippingForm.get('destination')?.invalid && shippingForm.get('destination')?.touched" class="text-danger">
+                Destination is required
+              </div>
+            </div>
+
+            <!-- Weight -->
+            <div class="col-md-6 mb-3">
+              <label for="weight" class="form-label">Weight (grams) *</label>
+              <input type="number" class="form-control" id="weight" formControlName="weight" min="1" required />
+              <div *ngIf="shippingForm.get('weight')?.invalid && shippingForm.get('weight')?.touched" class="text-danger">
+                Weight must be at least 1 gram
+              </div>
+            </div>
+
+            <!-- Courier -->
+            <div class="col-md-6 mb-3">
+              <label for="courier" class="form-label">Courier *</label>
+              <select class="form-select" id="courier" formControlName="courier" required>
+                <option *ngFor="let courier of courierList" [value]="courier.code">{{ courier.name }}</option>
+              </select>
+            </div>
+
+            <!-- Waybill -->
+            <div class="col-md-6 mb-3">
+              <label for="waybill" class="form-label">Waybill Number</label>
+              <input type="text" class="form-control" id="waybill" formControlName="waybill" placeholder="Enter waybill number" />
+            </div>
+
+            <!-- Status -->
+            <div class="col-md-6 mb-3">
+              <label for="status" class="form-label">Status</label>
+              <select class="form-select" id="status" formControlName="status">
+                <option *ngFor="let status of statusList" [value]="status.value">{{ status.label }}</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button type="submit" class="btn btn-primary" [disabled]="shippingForm.invalid || isSubmitting">
+            <span *ngIf="isSubmitting" class="spinner-border spinner-border-sm me-2"></span>
+            {{ isSubmitting ? "Saving..." : "Save Shipping" }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Edit Shipping Modal -->
+<div class="modal fade" id="editShippingModal" tabindex="-1" aria-labelledby="editShippingModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="editShippingModalLabel">✏️ Edit Shipping</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <form [formGroup]="shippingForm" (ngSubmit)="updateShipping()">
+        <div class="modal-body">
+          <div class="row">
+            <!-- Payment Selection -->
+            <div class="col-md-6 mb-3">
+              <label for="payment_id" class="form-label">Address (User) *</label>
+              <select class="form-select" id="payment_id" formControlName="payment_id" required>
+                <option value="">Select Payment</option>
+                <option *ngFor="let payment of payments" [value]="payment._id">
+                  {{ payment.address }} ({{ payment.firstName }} {{ payment.lastName }})
+                </option>
+              </select>
+              <div *ngIf="shippingForm.get('payment_id')?.invalid && shippingForm.get('payment_id')?.touched" class="text-danger">
+                Payment is required
+              </div>
+            </div>
+
+            <!-- Shipping Date -->
+            <div class="col-md-6 mb-3">
+              <label for="edit_shippingDate" class="form-label">Shipping Date</label>
+              <input type="datetime-local" class="form-control" id="edit_shippingDate" formControlName="shippingDate" />
+            </div>
+
+            <!-- Origin -->
+            <div class="col-md-6 mb-3">
+              <label for="edit_origin" class="form-label">Origin City *</label>
+              <select class="form-select" id="edit_origin" formControlName="origin" required>
+                <option value="">Select Origin</option>
+                <option *ngFor="let city of cityList" [value]="city.id">{{ city.name }}</option>
+              </select>
+            </div>
+
+            <!-- Destination -->
+            <div class="col-md-6 mb-3">
+              <label for="edit_destination" class="form-label">Destination City *</label>
+              <select class="form-select" id="edit_destination" formControlName="destination" required>
+                <option value="">Select Destination</option>
+                <option *ngFor="let city of destinationList" [value]="city.id">{{ city.name }}</option>
+              </select>
+            </div>
+
+            <!-- Weight -->
+            <div class="col-md-6 mb-3">
+              <label for="edit_weight" class="form-label">Weight (grams) *</label>
+              <input type="number" class="form-control" id="edit_weight" formControlName="weight" min="1" required />
+            </div>
+
+            <!-- Courier -->
+            <div class="col-md-6 mb-3">
+              <label for="edit_courier" class="form-label">Courier *</label>
+              <select class="form-select" id="edit_courier" formControlName="courier" required>
+                <option *ngFor="let courier of courierList" [value]="courier.code">{{ courier.name }}</option>
+              </select>
+            </div>
+
+            <!-- Waybill -->
+            <div class="col-md-6 mb-3">
+              <label for="edit_waybill" class="form-label">Waybill Number</label>
+              <input type="text" class="form-control" id="edit_waybill" formControlName="waybill" placeholder="Enter waybill number" />
+            </div>
+
+            <!-- Status -->
+            <div class="col-md-6 mb-3">
+              <label for="edit_status" class="form-label">Status</label>
+              <select class="form-select" id="edit_status" formControlName="status">
+                <option *ngFor="let status of statusList" [value]="status.value">{{ status.label }}</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button type="submit" class="btn btn-warning" [disabled]="shippingForm.invalid || isSubmitting">
+            <span *ngIf="isSubmitting" class="spinner-border spinner-border-sm me-2"></span>
+            {{ isSubmitting ? "Updating..." : "Update Shipping" }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Package Tracking Modal -->
+<div class="modal fade" id="trackingModal" tabindex="-1" aria-labelledby="trackingModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="trackingModalLabel">🔍 Track Package</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <form [formGroup]="trackingForm" (ngSubmit)="trackPackage()">
+        <div class="modal-body">
+          <div class="mb-3">
+            <label for="track_waybill" class="form-label">Waybill Number *</label>
+            <input type="text" class="form-control" id="track_waybill" formControlName="waybill" placeholder="Enter waybill number" required />
+            <div *ngIf="trackingForm.get('waybill')?.invalid && trackingForm.get('waybill')?.touched" class="text-danger">
+              Waybill number is required
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <label for="track_courier" class="form-label">Courier *</label>
+            <select class="form-select" id="track_courier" formControlName="courier" required>
+              <option *ngFor="let courier of courierList" [value]="courier.code">{{ courier.name }}</option>
+            </select>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <button type="submit" class="btn btn-info" [disabled]="trackingForm.invalid || isTracking">
+            <span *ngIf="isTracking" class="spinner-border spinner-border-sm me-2"></span>
+            {{ isTracking ? "Tracking..." : "Track Package" }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

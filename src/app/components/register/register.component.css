@@ -1,0 +1,70 @@
+/* Container utama login */
+.container {
+    max-width: 400px;
+    margin: 4rem auto;
+    padding: 2rem;
+    background: #fff0f5; /* Soft pink */
+    border-radius: 12px;
+    box-shadow: 0 4px 16px rgba(199, 21, 133, 0.15); /* Deep pink shadow */
+    font-family: 'Segoe UI', sans-serif;
+  }
+  
+  /* Judul login */
+  h2 {
+    text-align: center;
+    margin-bottom: 2rem;
+    color: #c71585; /* Deep pink */
+    font-weight: 600;
+  }
+  
+  /* Label input */
+  label.form-label {
+    font-weight: 500;
+    color: #444;
+  }
+  
+  /* Input field */
+  input.form-control {
+    padding: 0.75rem;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: border-color 0.3s, box-shadow 0.3s;
+  }
+  
+  input.form-control:focus {
+    border-color: #c71585;
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(199, 21, 133, 0.1);
+  }
+  
+  /* Tombol login */
+  button.btn {
+    width: 100%;
+    padding: 0.75rem;
+    font-size: 1rem;
+    font-weight: 600;
+    background-color: #c71585;
+    border-color: #c71585;
+    border-radius: 8px;
+    color: white;
+    transition: background-color 0.3s ease;
+  }
+  
+  button.btn:hover {
+    background-color: #a0136b;
+  }
+  
+  /* Error message */
+  .error-message {
+    color: #d9534f;
+    font-size: 0.9rem;
+    margin-top: 0.25rem;
+  }
+  
+  /* Error state input */
+  input.ng-invalid.ng-touched {
+    border-color: #d9534f;
+    background-color: #fff5f5;
+  }
+  

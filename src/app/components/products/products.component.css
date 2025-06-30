@@ -1,0 +1,127 @@
+h1 {
+    text-align: center;
+    color: #c71585;
+    margin-top: 2rem;
+    font-weight: bold;
+  }
+  
+  a[routerLink] {
+    margin: 0 10px;
+    text-decoration: none;
+    color: #c71585;
+    font-weight: 500;
+  }
+  
+  a[routerLink]:hover {
+    text-decoration: underline;
+  }
+  
+  /* ======= Container ======= */
+  .container {
+    background-color: #fff0f5;
+    padding: 2rem;
+    border-radius: 16px;
+    box-shadow: 0 4px 12px rgba(199, 21, 133, 0.1);
+  }
+  
+  /* ======= Judul Daftar Produk ======= */
+  h2.text-center {
+    font-weight: bold;
+    color: #c71585;
+  }
+  
+  /* ======= Tombol Tambah ======= */
+  .btn-success {
+    background-color: #c71585;
+    border-color: #c71585;
+  }
+  
+  .btn-success:hover {
+    background-color: #a0136b;
+    border-color: #a0136b;
+  }
+  
+  /* ======= Modal Style ======= */
+  .modal-content {
+    background-color: #fff0f5;
+    border-radius: 12px;
+    border: none;
+    padding: 1rem;
+  }
+  
+  .modal-header,
+  .modal-footer {
+    border: none;
+  }
+  
+  .modal-title {
+    color: #c71585;
+    font-weight: bold;
+  }
+  
+  /* ======= Form Input ======= */
+  input.form-control {
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    transition: border-color 0.3s;
+  }
+  
+  input.form-control:focus {
+    border-color: #c71585;
+    box-shadow: 0 0 0 3px rgba(199, 21, 133, 0.1);
+    outline: none;
+  }
+  
+  /* ======= Card Produk ======= */
+  .card {
+    border-radius: 12px;
+    overflow: hidden;
+    background-color: #fff;
+    transition: transform 0.2s ease-in-out;
+  }
+  
+  .card:hover {
+    transform: scale(1.02);
+  }
+  
+  .card-img-top {
+    object-fit: cover;
+    height: 200px;
+  }
+  
+  .card-body {
+    padding: 1rem;
+  }
+  
+  .card-title {
+    color: #c71585;
+    font-size: 1.2rem;
+    font-weight: bold;
+  }
+  
+  .card-text {
+    font-size: 0.95rem;
+    color: #333;
+  }
+  
+  /* ======= Tombol Edit & Hapus ======= */
+  .btn-warning {
+    background-color: #ffc107;
+    border-color: #ffc107;
+  }
+  
+  .btn-warning:hover {
+    background-color: #e0a800;
+    border-color: #d39e00;
+  }
+  
+  .btn-danger {
+    background-color: #dc3545;
+    border-color: #dc3545;
+  }
+  
+  .btn-danger:hover {
+    background-color: #c82333;
+    border-color: #bd2130;
+  }
+  

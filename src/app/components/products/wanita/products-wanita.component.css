@@ -1,0 +1,107 @@
+body {
+  background-color: #fff6f9;
+  font-family: 'Poppins', sans-serif;
+}
+
+.container {
+  padding: 20px;
+}
+
+/* Tombol Tambah Produk */
+.btn-primary {
+  background-color: #f28ab2;
+  border-color: #f28ab2;
+}
+
+.btn-primary:hover {
+  background-color: #ec6b9b;
+  border-color: #ec6b9b;
+}
+
+.btn-success {
+  background-color: #d96c92;
+  border-color: #d96c92;
+}
+
+.btn-success:hover {
+  background-color: #c75e85;
+  border-color: #c75e85;
+}
+
+.btn-warning {
+  background-color: #ffc2d1;
+  border-color: #ffc2d1;
+  color: #6b1e35;
+}
+
+.btn-warning:hover {
+  background-color: #ffb0c3;
+  border-color: #ffb0c3;
+}
+
+.btn-danger {
+  background-color: #f5818f;
+  border-color: #f5818f;
+}
+
+.btn-danger:hover {
+  background-color: #e86675;
+  border-color: #e86675;
+}
+
+/* Modal Header */
+.modal-header {
+  background-color: #ffe0ea;
+  color: #6b1e35;
+}
+
+/* Modal Body */
+.modal-body {
+  background-color: #fff6f9;
+}
+
+/* Modal Footer */
+.modal-footer {
+  background-color: #ffeef3;
+}
+
+/* Form Input & Select */
+.form-control, .form-select {
+  border-radius: 0.75rem;
+  border-color: #f7c3d2;
+}
+
+.form-control:focus, .form-select:focus {
+  border-color: #ec6b9b;
+  box-shadow: 0 0 0 0.2rem rgba(236, 107, 155, 0.25);
+}
+
+/* Card Produk */
+.card {
+  background-color: #ffffff;
+  border: 1px solid #fdd5e0;
+  border-radius: 1rem;
+  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 16px rgba(245, 129, 143, 0.2);
+}
+
+.card-title {
+  color: #c23b62;
+  font-weight: 600;
+}
+
+.card-text {
+  font-size: 0.95rem;
+  color: #5b2c41;
+}
+
+/* Spinner */
+.spinner-border {
+  width: 3rem;
+  height: 3rem;
+  color: #f28ab2;
+}

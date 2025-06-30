@@ -1,0 +1,106 @@
+<!-- orders.component.html -->
+<div class="softpink-bg mt-4 p-4 rounded">
+  <h2 class="text-center text-softpink mb-4">Daftar Order</h2>
+
+  <!-- Tombol SEE RECAP -->
+  <div class="text-center mb-4">
+    <button class="btn btn-primary" (click)="showRecapSection()">
+      SEE RECAP
+    </button>
+  </div>
+
+  <!-- Daftar Pemesanan -->
+  <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4 mt-3">
+    <div class="col" *ngFor="let item of orders">
+      <div class="card shadow-sm">
+        <div class="card-body">
+          <h5 class="card-title"></h5>
+          <p class="card-text">
+            <strong>Nama:</strong> {{ item.nama }}
+            <strong>Tanggal Order:</strong> {{ item.order | date : "dd/MM/yyyy"
+            }}<br />
+            <strong>Produk:</strong>
+          </p>
+
+          <ul
+            *ngIf="
+              item.products_id && item.products_id.length > 0;
+              else noProducts
+            "
+          >
+            <li *ngFor="let product of item.products_id">
+              <span
+                *ngIf="product && typeof product === 'object'; else productId"
+              >
+                {{ product.nama || product.title || "Nama tidak tersedia" }}
+              </span>
+              <ng-template #productId>
+                <span class="text-muted">Product ID: {{ product }}</span>
+              </ng-template>
+            </li>
+          </ul>
+
+          <ng-template #noProducts>
+            <p class="text-muted">Tidak ada produk yang ditemukan</p>
+          </ng-template>
+          <strong>Ukuran & Jumlah:</strong>
+          <ul>
+            <li *ngFor="let size of item.sizes">
+              {{ size.size }}: {{ size.quantity }}
+            </li>
+          </ul>
+          <strong>Jumlah Total Item:</strong> {{ item.jumlahOrder }}<br />
+          <strong>Total Harga:</strong> {{ item.total | currency : "IDR"
+          }}<br />
+          <strong>Dibuat Pada:</strong>
+          {{ item.createdAt | date : "dd/MM/yyyy HH:mm" }}
+
+          <!-- <button class="btn btn-warning me-2" (click)="getOrderById(item._id)">
+            Edit
+          </button> -->
+          <button class="btn btn-danger" (click)="deleteOrder(item._id)">
+            Delete
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Bagian Rekap yang dikontrol oleh showRecap -->
+<div class="mt-4" *ngIf="showRecap">
+  <h3>Rekap {{ recapType | titlecase }}</h3>
+  <button class="btn btn-primary me-2" (click)="getRecap('daily')">
+    Harian
+  </button>
+  <button class="btn btn-primary me-2" (click)="getRecap('weekly')">
+    Mingguan
+  </button>
+  <button class="btn btn-primary" (click)="getRecap('monthly')">Bulanan</button>
+  <table class="table table-bordered mt-3">
+    <thead>
+      <tr>
+        <th>Periode</th>
+        <th>Total Pesanan</th>
+        <th>Total Harga</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let recap of recapData">
+        <td>{{ recap.period }}</td>
+        <td>{{ recap.totalOrders }}</td>
+        <td>{{ recap.totalAmount | currency : "IDR" }}</td>
+      </tr>
+      <!-- Baris untuk menampilkan total -->
+      <tr *ngIf="recapData.length > 0" class="table-primary">
+        <td><strong>Total</strong></td>
+        <td>
+          <strong>{{ totalPesanan }}</strong>
+        </td>
+        <td>
+          <strong>{{ totalHarga | currency : "IDR" }}</strong>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>

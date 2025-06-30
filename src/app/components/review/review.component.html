@@ -1,0 +1,141 @@
+<link
+  href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap"
+  rel="stylesheet"
+/>
+<div class="container mt-4">
+  <h2 class="text-center text-info mb-4">Daftar Review</h2>
+
+  <!-- Tombol Tambah (hanya untuk user) -->
+  <button
+    *ngIf="userRole === 'user' || userRole === 'admin'"
+    class="btn btn-info mb-3"
+    data-bs-toggle="modal"
+    data-bs-target="#tambahReviewModal"
+  >
+    Tambah Review
+  </button>
+
+  <!-- Modal Tambah -->
+  <div
+    class="modal fade"
+    id="tambahReviewModal"
+    tabindex="-1"
+    aria-labelledby="tambahReviewLabel"
+    aria-hidden="true"
+  >
+    <div class="modal-dialog">
+      <form
+        class="modal-content"
+        [formGroup]="reviewForm"
+        (ngSubmit)="addReview()"
+      >
+        <div class="modal-header">
+          <h5 class="modal-title" id="tambahReviewLabel">Tambah Review</h5>
+          <button class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <div class="mb-3">
+            <label class="form-label">Nama</label>
+            <input type="text" class="form-control" formControlName="nama" />
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Order</label>
+            <select class="form-select" formControlName="orders_id">
+              <option value="">Pilih Order</option>
+              <option *ngFor="let order of orders" [value]="order._id">
+                {{ order.nama || "Tidak tersedia" }} -
+                <span *ngIf="order.products_id?.length">
+                  <span
+                    *ngFor="let product of order.products_id; let last = last"
+                  >
+                    {{ product.nama || "Produk tidak tersedia"
+                    }}{{ !last ? ", " : "" }}
+                  </span>
+                </span>
+                <span *ngIf="!order.products_id?.length">Tidak ada produk</span>
+              </option>
+            </select>
+            <small *ngIf="orders.length === 0" class="text-danger"
+              >Tidak ada pesanan untuk direview.</small
+            >
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Pesan</label>
+            <textarea
+              class="form-control"
+              rows="3"
+              formControlName="pesan"
+            ></textarea>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Rating (1 - 5)</label>
+            <input
+              type="number"
+              class="form-control"
+              formControlName="rating"
+              min="1"
+              max="5"
+            />
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-secondary" data-bs-dismiss="modal">
+            Batal
+          </button>
+          <button class="btn btn-info" type="submit" [disabled]="isSubmitting">
+            {{ isSubmitting ? "Menyimpan..." : "Simpan" }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Daftar Review -->
+  <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4 mt-3">
+    <div class="col" *ngFor="let review of reviews">
+      <div class="card shadow-sm">
+        <div class="card-body">
+          <h5 class="card-title">{{ review.nama || "Tidak tersedia" }}</h5>
+          <!-- Tambahkan gambar produk -->
+          <div class="mb-2" *ngIf="review.products_id?.length">
+            <img
+              *ngFor="let product of review.products_id"
+              [src]="product.foto"
+              alt="{{ product.nama || 'Produk' }}"
+              class="img-fluid"
+              style="max-width: 100px; max-height: 100px"
+            />
+          </div>
+          <p class="card-text">
+            <strong>Order:</strong>
+            {{ review.orders_id?.nama || "Tidak tersedia" }}<br />
+            <strong>Produk:</strong>
+            <span *ngIf="review.products_id?.length">
+              <span *ngFor="let product of review.products_id; let last = last">
+                {{ product.nama || "Produk tidak tersedia"
+                }}{{ !last ? ", " : "" }}
+              </span>
+            </span>
+            <span *ngIf="!review.products_id?.length">Tidak ada produk</span
+            ><br />
+            <strong>Pesan:</strong> {{ review.pesan || "Tidak ada pesan"
+            }}<br />
+            <strong>Rating:</strong>
+            <span *ngFor="let star of [].constructor(review.rating || 0)"
+              >⭐</span
+            >
+            ({{ review.rating || 0 }})
+          </p>
+          <!-- Tombol Hapus (hanya untuk admin) -->
+          <button
+            *ngIf="userRole === 'admin'"
+            class="btn btn-danger"
+            (click)="deleteReview(review._id)"
+          >
+            Hapus
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

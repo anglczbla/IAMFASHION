@@ -1,0 +1,25 @@
+<div class="cart-container">
+  <h2>Keranjang Belanja</h2>
+  <div *ngIf="cart.items.length === 0" class="empty-cart">
+    Keranjang kosong.
+  </div>
+  <div *ngIf="cart.items.length > 0" class="cart-items">
+    <div class="cart-item" *ngFor="let item of cart.items">
+      <img [src]="item.foto" alt="{{ item.nama }}" class="item-image">
+      <div class="item-details">
+        <h3>{{ item.nama }}</h3>
+        <p>Harga: Rp{{ item.harga | number }}</p>
+        <p>Size: {{ item.size}}</p>
+        <p>Jumlah: {{ item.quantity }}</p>
+        <p>Total: Rp{{ item.total | number }}</p>
+        <button (click)="decrementItem(item.productId)">-</button>
+        <button (click)="incrementItem(item.productId)">+</button>
+        <button (click)="removeFromCart(item.productId)">Hapus</button>
+      </div>
+    </div>
+    <div class="cart-total">
+      <h3>Total: Rp{{ cart.total | number }}</h3>
+      <button (click)="checkout()">Checkout</button>
+    </div>
+  </div>
+</div>

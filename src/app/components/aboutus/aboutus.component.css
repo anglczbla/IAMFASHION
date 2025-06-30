@@ -1,0 +1,68 @@
+.fashion-about {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem 2rem;
+  background: radial-gradient(#fff, #ffd6d6); /* Soft pink */
+  font-family: 'Segoe UI', sans-serif;
+  border-radius: 12px;
+  gap: 2rem;
+  box-sizing: border-box;
+}
+
+.about-left {
+  flex: 1;
+  max-width: 500px;
+}
+
+.about-left h1 {
+  font-size: 3rem;
+  color: #c71585; /* Deep pink */
+  margin-bottom: 1rem;
+  font-weight: 600;
+}
+
+.about-left p {
+  font-size: 1.1rem;
+  color: #333;
+  margin-bottom: 1rem;
+  line-height: 1.6;
+}
+
+.about-left p strong {
+  color: #c71585; /* Warna deep pink untuk teks "Waktu Operasional" */
+}
+
+.about-right {
+  flex: 1;
+  text-align: center;
+}
+
+.about-right img {
+  width: 100%;
+  max-width: 400px;
+  border-radius: 16px;
+  box-shadow: 0 8px 20px rgba(199, 21, 133, 0.2);
+  transition: transform 0.3s ease;
+}
+
+.about-right img:hover {
+  transform: scale(1.03);
+}
+
+.map-container {
+  width: 100%;
+  padding: 2rem;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 8px 20px rgba(199, 21, 133, 0.2);
+  margin-top: 2rem;
+}
+
+#map {
+  height: 400px; /* Tinggi peta yang cukup untuk visibilitas */
+  width: 100%;
+  border-radius: 12px;
+  overflow: hidden;
+}

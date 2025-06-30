@@ -1,0 +1,32 @@
+<head>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+</head>
+<nav class="navbar">
+  <ul>
+    <li><a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">Home</a></li>
+    <li><a routerLink="/aboutus" routerLinkActive="active">About Us</a></li>
+    <li><a routerLink="/products" routerLinkActive="active">Product</a></li>
+    <li *ngIf="userRole === 'admin'"><a routerLink="/orders" routerLinkActive="active">Orders</a></li>
+    <li *ngIf="userRole === 'user'"><a routerLink="/cart" routerLinkActive="active">Cart</a></li>
+    <li *ngIf="userRole === 'admin'"><a routerLink="/payments" routerLinkActive="active">Payment</a></li>
+    <li *ngIf="userRole === 'admin'"><a routerLink="/shipping" routerLinkActive="active">Shipping</a></li>
+    <li><a routerLink="/review" routerLinkActive="active">Review</a></li>
+    <li *ngIf="userRole === 'user'"><a routerLink="/history" routerLinkActive="active">History</a></li>
+    <li><a routerLink="/contactus" routerLinkActive="active">Contact Us</a></li>
+    <li class="nav-item">
+      <a *ngIf="!isLoggedIn" class="nav-link" routerLink="/register" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        Register
+      </a>
+    </li>
+    <li class="nav-item">
+      <a *ngIf="!isLoggedIn" class="nav-link" routerLink="/auth" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        Login
+      </a>
+    </li>
+    <li class="nav-item">
+      <a *ngIf="isLoggedIn" class="nav-link" (click)="onLogout()" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        Logout
+      </a>
+    </li>
+  </ul>
+</nav>

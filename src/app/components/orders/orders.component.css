@@ -1,0 +1,132 @@
+/* Warna dasar */
+body {
+  background-color: #ffe6e6;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color: #333;
+  margin: 0;
+  padding: 0;
+}
+
+.container {
+  padding: 20px;
+}
+
+/* Judul halaman */
+.text-softpink {
+  color: #ff6fa7;
+  font-weight: bold;
+}
+
+/* Tombol umum */
+.btn-softpink {
+  background-color: #ffb6c1;
+  border-color: #ffb6c1;
+  color: white;
+}
+
+.btn-softpink:hover {
+  background-color: #ff99aa;
+  border-color: #ff99aa;
+}
+
+.btn-primary {
+  background-color: #ff8da3;
+  border-color: #ff8da3;
+  color: white;
+}
+
+.btn-primary:hover {
+  background-color: #ff6b81;
+  border-color: #ff6b81;
+}
+
+/* Tombol khusus */
+.btn-warning {
+  background-color: #ffd6d6;
+  border-color: #ffd6d6;
+  color: #6c464e;
+}
+
+.btn-warning:hover {
+  background-color: #ffb3b3;
+  border-color: #ffb3b3;
+}
+
+.btn-danger {
+  background-color: #ff6b81;
+  border-color: #ff6b81;
+  color: white;
+}
+
+.btn-danger:hover {
+  background-color: #ff4d6d;
+  border-color: #ff4d6d;
+}
+
+.btn-secondary {
+  background-color: #eac8e9;
+  border-color: #eac8e9;
+}
+
+.btn-secondary:hover {
+  background-color: #d6a8d4;
+  border-color: #d6a8d4;
+}
+
+/* Kartu daftar order */
+.card {
+  border: 1px solid #f8cdda;
+  border-radius: 12px;
+  background-color: #fff0f5;
+  transition: transform 0.3s, box-shadow 0.3s;
+  animation: fadeInUp 0.4s ease-in-out;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 20px rgba(249, 185, 203, 0.3);
+}
+
+.card-title {
+  color: #ff7f50;
+  font-size: 1.25rem;
+}
+
+.card-text {
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+/* Bagian modal */
+.modal-content {
+  border-radius: 12px;
+  border: none;
+  background-color: #fffaf0;
+}
+
+.modal-header,
+.modal-footer {
+  border: none;
+  background-color: #ffe4e1;
+}
+
+.modal-title {
+  color: #ff7f50;
+  font-weight: 600;
+}
+
+/* Form */
+.form-control,
+.form-select {
+  border-radius: 8px;
+  border: 1px solid #f5c6cb;
+}
+
+/* Efek animasi */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: tr
+  }
+}
+

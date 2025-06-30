@@ -1,0 +1,690 @@
+<!-- Loading Spinner -->
+<div
+  *ngIf="isLoading"
+  class="d-flex justify-content-center align-items-center min-vh-100"
+>
+  <div class="spinner-border text-primary" role="status">
+    <span class="visually-hidden">Loading...</span>
+  </div>
+</div>
+
+<!-- Main Content -->
+<div *ngIf="!isLoading" class="container-fluid py-4">
+  <div class="row">
+    <div class="col-12">
+      <!-- Header Section -->
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <!-- <div>
+          <h2 class="mb-0">Men's Products</h2>
+          <p class="text-muted mb-0">Browse our collection of men's fashion</p>
+        </div> -->
+
+        <!-- Admin Controls -->
+        <div *ngIf="userRole === 'admin'" class="d-flex gap-2">
+          <button
+            class="btn btn-primary"
+            data-bs-toggle="modal"
+            data-bs-target="#tambahProdukModal"
+          >
+            <i class="fas fa-plus me-2"></i>Add Product
+          </button>
+        </div>
+      </div>
+
+      <!-- Products Grid -->
+      <div class="row g-4">
+        <div
+          class="col-lg-3 col-md-4 col-sm-6"
+          *ngFor="let product of products"
+        >
+          <div class="card h-100 shadow-sm product-card">
+            <!-- Product Image -->
+            <div class="position-relative overflow-hidden">
+              <img
+                [src]="product.foto"
+                alt="Foto Produk"
+                class="card-img-top"
+                style="object-fit: cover; height: 300px"
+                (click)="onProductClick(product)"
+              />
+
+              <!-- Stock Badge -->
+              <div class="position-absolute top-0 end-0 m-2">
+                <span class="badge bg-primary">
+                  {{ getAvailableSizes(product).length }} sizes available
+                </span>
+              </div>
+
+              <!-- Out of Stock Overlay -->
+              <div
+                *ngIf="getAvailableSizes(product).length === 0"
+                class="position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center bg-dark bg-opacity-75"
+              >
+                <span class="badge bg-danger fs-6">Out of Stock</span>
+              </div>
+            </div>
+
+            <div class="card-body d-flex flex-column">
+              <!-- Product Info -->
+              <div class="mb-3">
+                <h5 class="card-title mb-2">{{ product.nama }}</h5>
+                <p class="card-text text-muted small mb-2">
+                  {{ product.deskripsi }}
+                </p>
+                <div
+                  class="d-flex justify-content-between align-items-center mb-2"
+                >
+                  <span class="fw-bold text-primary fs-5"
+                    >Rp{{ product.harga | number }}</span
+                  >
+                  <small class="text-muted">{{ product.brand }}</small>
+                </div>
+              </div>
+
+              <!-- Available Sizes -->
+              <div class="mb-3">
+                <small class="text-muted d-block mb-1">Available Sizes:</small>
+                <div class="d-flex flex-wrap gap-1">
+                  <span
+                    *ngFor="let size of getAvailableSizes(product)"
+                    class="badge bg-light text-dark border"
+                  >
+                    {{ size.size }} ({{ size.stok }})
+                  </span>
+                  <span
+                    *ngIf="getAvailableSizes(product).length === 0"
+                    class="badge bg-danger"
+                    >No sizes available</span
+                  >
+                </div>
+              </div>
+
+              <!-- Action Buttons -->
+              <div class="mt-auto">
+                <!-- Customer Buttons -->
+                <div
+                  *ngIf="isLoggedIn && userRole !== 'admin'"
+                  class="d-grid gap-2"
+                >
+                  <button
+                    class="btn btn-primary btn-sm"
+                    [disabled]="getAvailableSizes(product).length === 0"
+                    (click)="onProductClick(product)"
+                  >
+                    <i class="fas fa-shopping-bag me-1"></i>Order Now
+                  </button>
+                  <button
+                    class="btn btn-outline-primary btn-sm"
+                    [disabled]="
+                      getAvailableSizes(product).length === 0 || !isLoggedIn
+                    "
+                    (click)="addToCart(product)"
+                  >
+                    <i class="fas fa-cart-plus me-1"></i>Add to Cart
+                  </button>
+                </div>
+
+                <!-- Pesan jika belum login -->
+                <div *ngIf="!isLoggedIn" class="text-center">
+                  <p class="text-danger">Harus login terlebih dahulu</p>
+                </div>
+
+                <!-- Admin Buttons -->
+                <div
+                  *ngIf="isLoggedIn && userRole === 'admin'"
+                  class="d-flex gap-1"
+                >
+                  <button
+                    class="btn btn-warning btn-sm flex-fill"
+                    (click)="getProductById(product._id)"
+                  >
+                    <i class="fas fa-edit"></i>
+                  </button>
+                  <button
+                    class="btn btn-danger btn-sm flex-fill"
+                    (click)="deleteProduct(product._id)"
+                  >
+                    <i class="fas fa-trash"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Empty State -->
+      <div *ngIf="products.length === 0" class="text-center py-5">
+        <i class="fas fa-box-open fa-4x text-muted mb-3"></i>
+        <h4 class="text-muted">No Products Available</h4>
+        <p class="text-muted">Check back later for new arrivals!</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Add Product Modal -->
+<div class="modal fade" id="tambahProdukModal" tabindex="-1">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Add New Product</h5>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+        ></button>
+      </div>
+
+      <form [formGroup]="productsForm" (ngSubmit)="addProduct()">
+        <div class="modal-body">
+          <div class="row g-3">
+            <!-- Basic Info -->
+            <div class="col-md-6">
+              <label class="form-label">Product Name</label>
+              <input
+                type="text"
+                class="form-control"
+                formControlName="nama"
+                required
+              />
+            </div>
+
+            <div class="col-md-6">
+              <label class="form-label">Brand</label>
+              <input
+                type="text"
+                class="form-control"
+                formControlName="brand"
+                required
+              />
+            </div>
+
+            <div class="col-12">
+              <label class="form-label">Description</label>
+              <textarea
+                class="form-control"
+                rows="3"
+                formControlName="deskripsi"
+                required
+              ></textarea>
+            </div>
+
+            <div class="col-md-6">
+              <label class="form-label">Price (Rp)</label>
+              <input
+                type="number"
+                class="form-control"
+                formControlName="harga"
+                required
+              />
+            </div>
+
+            <div class="col-md-6">
+              <label class="form-label">Category</label>
+              <select class="form-select" formControlName="kategori">
+                <option value="pria">Men</option>
+              </select>
+            </div>
+
+            <div class="col-12">
+              <label class="form-label">Product Image</label>
+              <input
+                type="file"
+                class="form-control"
+                (change)="onFileSelected($event)"
+                accept="image/*"
+                required
+              />
+            </div>
+
+            <!-- Size Management Section -->
+            <div class="col-12">
+              <hr />
+              <h6>Product Sizes & Stock</h6>
+
+              <!-- Add Size Form -->
+              <div class="card bg-light">
+                <div class="card-body">
+                  <div class="row g-2 align-items-end">
+                    <div class="col-md-4">
+                      <label class="form-label small">Size</label>
+                      <input
+                        type="text"
+                        class="form-control form-control-sm"
+                        [(ngModel)]="newSize"
+                        [ngModelOptions]="{ standalone: true }"
+                        placeholder="e.g., S, M, L, XL"
+                      />
+                    </div>
+                    <div class="col-md-4">
+                      <label class="form-label small">Stock</label>
+                      <input
+                        type="number"
+                        class="form-control form-control-sm"
+                        [(ngModel)]="newStock"
+                        [ngModelOptions]="{ standalone: true }"
+                        min="0"
+                        placeholder="0"
+                      />
+                    </div>
+                    <div class="col-md-4">
+                      <button
+                        type="button"
+                        class="btn btn-success btn-sm w-100"
+                        (click)="addSize()"
+                      >
+                        <i class="fas fa-plus me-1"></i>Add Size
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Sizes List -->
+              <div class="mt-3">
+                <div *ngIf="sizes.length === 0" class="alert alert-warning">
+                  <i class="fas fa-exclamation-triangle me-2"></i>
+                  Please add at least one size for this product.
+                </div>
+
+                <div *ngIf="sizes.length > 0" class="table-responsive">
+                  <table class="table table-sm">
+                    <thead>
+                      <tr>
+                        <th>Size</th>
+                        <th>Stock</th>
+                        <th width="80">Action</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr *ngFor="let size of sizes; let i = index">
+                        <td>
+                          <span class="badge bg-primary">{{ size.size }}</span>
+                        </td>
+                        <td>{{ size.stok }}</td>
+                        <td>
+                          <button
+                            type="button"
+                            class="btn btn-danger btn-sm"
+                            (click)="removeSize(i)"
+                          >
+                            <i class="fas fa-trash"></i>
+                          </button>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button
+            type="button"
+            class="btn btn-secondary"
+            data-bs-dismiss="modal"
+            (click)="resetForm()"
+          >
+            Cancel
+          </button>
+          <button
+            type="submit"
+            class="btn btn-primary"
+            [disabled]="
+              isSubmitting || !productsForm.valid || sizes.length === 0
+            "
+          >
+            <span
+              *ngIf="isSubmitting"
+              class="spinner-border spinner-border-sm me-2"
+            ></span>
+            Add Product
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Edit Product Modal -->
+<div class="modal fade" id="editProdukModal" tabindex="-1">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Edit Product</h5>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+        ></button>
+      </div>
+
+      <form [formGroup]="productsForm" (ngSubmit)="updateProduct()">
+        <div class="modal-body">
+          <div class="row g-3">
+            <!-- Basic Info -->
+            <div class="col-md-6">
+              <label class="form-label">Product Name</label>
+              <input
+                type="text"
+                class="form-control"
+                formControlName="nama"
+                required
+              />
+            </div>
+
+            <div class="col-md-6">
+              <label class="form-label">Brand</label>
+              <input
+                type="text"
+                class="form-control"
+                formControlName="brand"
+                required
+              />
+            </div>
+
+            <div class="col-12">
+              <label class="form-label">Description</label>
+              <textarea
+                class="form-control"
+                rows="3"
+                formControlName="deskripsi"
+                required
+              ></textarea>
+            </div>
+
+            <div class="col-md-6">
+              <label class="form-label">Price (Rp)</label>
+              <input
+                type="number"
+                class="form-control"
+                formControlName="harga"
+                required
+              />
+            </div>
+
+            <div class="col-md-6">
+              <label class="form-label">Category</label>
+              <select class="form-select" formControlName="kategori">
+                <option value="pria">Men</option>
+              </select>
+            </div>
+
+            <div class="col-12">
+              <label class="form-label"
+                >Product Image (leave empty to keep current)</label
+              >
+              <input
+                type="file"
+                class="form-control"
+                (change)="onFileSelected($event)"
+                accept="image/*"
+              />
+            </div>
+
+            <!-- Size Management Section -->
+            <div class="col-12">
+              <hr />
+              <div class="d-flex justify-content-between align-items-center">
+                <h6>Product Sizes & Stock</h6>
+                <button
+                  type="button"
+                  class="btn btn-warning btn-sm"
+                  (click)="resetSizes()"
+                >
+                  <i class="fas fa-refresh me-1"></i>Reset Sizes
+                </button>
+              </div>
+
+              <!-- Add Size Form -->
+              <div class="card bg-light">
+                <div class="card-body">
+                  <div class="row g-2 align-items-end">
+                    <div class="col-md-4">
+                      <label class="form-label small">Size</label>
+                      <input
+                        type="text"
+                        class="form-control form-control-sm"
+                        [(ngModel)]="newSize"
+                        [ngModelOptions]="{ standalone: true }"
+                        placeholder="e.g., S, M, L, XL"
+                      />
+                    </div>
+                    <div class="col-md-4">
+                      <label class="form-label small">Stock</label>
+                      <input
+                        type="number"
+                        class="form-control form-control-sm"
+                        [(ngModel)]="newStock"
+                        [ngModelOptions]="{ standalone: true }"
+                        min="0"
+                        placeholder="0"
+                      />
+                    </div>
+                    <div class="col-md-4">
+                      <button
+                        type="button"
+                        class="btn btn-success btn-sm w-100"
+                        (click)="addSize()"
+                      >
+                        <i class="fas fa-plus me-1"></i>Add Size
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Sizes List -->
+              <div class="mt-3">
+                <div *ngIf="sizes.length === 0" class="alert alert-warning">
+                  <i class="fas fa-exclamation-triangle me-2"></i>
+                  Please add at least one size for this product.
+                </div>
+
+                <div *ngIf="sizes.length > 0" class="table-responsive">
+                  <table class="table table-sm">
+                    <thead>
+                      <tr>
+                        <th>Size</th>
+                        <th>Stock</th>
+                        <th width="80">Action</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr *ngFor="let size of sizes; let i = index">
+                        <td>
+                          <span class="badge bg-primary">{{ size.size }}</span>
+                        </td>
+                        <td>{{ size.stok }}</td>
+                        <td>
+                          <button
+                            type="button"
+                            class="btn btn-danger btn-sm"
+                            (click)="removeSize(i)"
+                          >
+                            <i class="fas fa-trash"></i>
+                          </button>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button
+            type="button"
+            class="btn btn-secondary"
+            data-bs-dismiss="modal"
+            (click)="resetForm()"
+          >
+            Cancel
+          </button>
+          <button
+            type="submit"
+            class="btn btn-warning"
+            [disabled]="!productsForm.valid || sizes.length === 0"
+          >
+            Update Product
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Order Modal -->
+<div class="modal fade" id="orderModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Place Order</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+
+      <div class="modal-body" *ngIf="selectedProduct">
+        <!-- Product Info -->
+        <div class="d-flex align-items-center mb-3">
+          <img
+            [src]="selectedProduct.foto"
+            alt="Foto Produk"
+            class="card-img-top"
+            style="object-fit: cover; height: 300px"
+            (click)="onProductClick(selectedProduct)"
+          />
+          <div>
+            <h6 class="mb-1">{{ selectedProduct.nama }}</h6>
+            <p class="text-muted mb-1">{{ selectedProduct.brand }}</p>
+            <span class="fw-bold text-primary"
+              >Rp{{ selectedProduct.harga | number }}</span
+            >
+          </div>
+        </div>
+
+        <!-- Order Form -->
+        <form>
+          <div class="mb-3">
+            <label class="form-label">Your Name</label>
+            <input
+              type="text"
+              class="form-control"
+              [(ngModel)]="buyerName"
+              name="buyerName"
+              required
+            />
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Add Sizes</label>
+            <div class="row g-2 mb-2">
+              <div class="col-md-6">
+                <select
+                  class="form-select"
+                  [(ngModel)]="currentSize"
+                  name="currentSize"
+                  required
+                >
+                  <option value="">Choose size...</option>
+                  <option
+                    *ngFor="let size of getAvailableSizes(selectedProduct)"
+                    [value]="size.size"
+                  >
+                    {{ size.size }} (Stock: {{ size.stok }})
+                  </option>
+                </select>
+              </div>
+              <div class="col-md-4">
+                <input
+                  type="number"
+                  class="form-control"
+                  [(ngModel)]="currentQuantity"
+                  name="currentQuantity"
+                  min="1"
+                  [max]="getSizeStock(currentSize)"
+                  required
+                />
+              </div>
+              <div class="col-md-2">
+                <button
+                  type="button"
+                  class="btn btn-primary w-100"
+                  (click)="addSizeToOrder(currentSize, currentQuantity)"
+                  [disabled]="!currentSize || currentQuantity <= 0 || currentQuantity > getSizeStock(currentSize)"
+                >
+                  Add
+                </button>
+              </div>
+            </div>
+            <!-- Display Selected Sizes -->
+            <ul class="list-group mt-2" *ngIf="selectedSizes.length > 0">
+              <li
+                class="list-group-item d-flex justify-content-between align-items-center"
+                *ngFor="let sizeOrder of selectedSizes"
+              >
+                {{ sizeOrder.size }} - {{ sizeOrder.quantity }} pcs
+                <button
+                  type="button"
+                  class="btn btn-danger btn-sm"
+                  (click)="removeSizeFromOrder(sizeOrder.size)"
+                >
+                  <i class="fas fa-trash"></i>
+                </button>
+              </li>
+            </ul>
+            <div *ngIf="selectedSizes.length === 0" class="alert alert-warning mt-2">
+              <i class="fas fa-exclamation-triangle me-2"></i>
+              Please add at least one size to your order.
+            </div>
+          </div>
+
+          <!-- Order Summary -->
+          <div class="border rounded p-3 bg-light">
+            <h6>Order Summary</h6>
+            <div *ngFor="let sizeOrder of selectedSizes">
+              <div class="d-flex justify-content-between">
+                <span>{{ selectedProduct.nama }} ({{ sizeOrder.size }})</span>
+                <span>{{ sizeOrder.quantity }}x</span>
+              </div>
+            </div>
+            <div class="d-flex justify-content-between">
+              <span>Price per item:</span>
+              <span>Rp{{ selectedProduct.harga | number }}</span>
+            </div>
+            <hr />
+            <div class="d-flex justify-content-between fw-bold">
+              <span>Total:</span>
+              <span class="text-primary"
+                >Rp{{ getTotalPrice() | number }}</span
+              >
+            </div>
+          </div>
+        </form>
+      </div>
+
+      <div class="modal-footer">
+        <button
+          type="button"
+          class="btn btn-secondary"
+          data-bs-dismiss="modal"
+          (click)="resetOrderForm()"
+        >
+          Cancel
+        </button>
+        <button
+          type="button"
+          class="btn btn-primary"
+          (click)="submitOrder()"
+          [disabled]="!buyerName || selectedSizes.length === 0"
+        >
+          <i class="fas fa-shopping-cart me-1"></i>Place Order
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

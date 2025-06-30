@@ -1,0 +1,183 @@
+/* Custom CSS for Eye-Catching Shopping Cart */
+body {
+  background-color: #fff7f5; /* Very light pink background for warmth */
+  font-family: 'Poppins', sans-serif; /* Modern, clean font */
+  color: #333333; /* Dark gray for high readability */
+}
+
+.cart-container {
+  background-color: #ffffff; /* White container for contrast */
+  border-radius: 12px; /* Rounded corners */
+  padding: 2rem;
+  box-shadow: 0 4px 15px rgba(255, 147, 112, 0.15); /* Subtle orange-tinted shadow */
+  max-width: 900px; /* Slightly wider for cart layout */
+  margin: 2rem auto; /* Center the container */
+}
+
+.cart-container h2 {
+  color: #ff7043; /* Vibrant orange for heading */
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  text-align: center;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid #ffe0d6; /* Light orange border */
+  margin-bottom: 2rem;
+}
+
+.empty-cart {
+  text-align: center;
+  color: #666666; /* Medium gray for empty state */
+  font-size: 1.2rem;
+  padding: 2rem;
+  background-color: #fef6e7; /* Light orange background for empty state */
+  border-radius: 10px;
+  margin: 1rem 0;
+}
+
+.cart-items {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem; /* Space between cart items */
+}
+
+.cart-item {
+  display: flex;
+  align-items: center;
+  background: linear-gradient(135deg, #fff7f5 0%, #fff1ed 100%); /* Subtle pink-to-orange gradient */
+  border-radius: 10px;
+  padding: 1.5rem;
+  box-shadow: 0 3px 10px rgba(255, 147, 112, 0.1); /* Light orange shadow */
+  transition: transform 0.3s ease, box-shadow 0.3s ease; /* Smooth hover effects */
+}
+
+.cart-item:hover {
+  transform: translateY(-5px); /* Slight lift on hover */
+  box-shadow: 0 6px 20px rgba(255, 147, 112, 0.2); /* Enhanced shadow */
+}
+
+.item-image {
+  width: 100px; /* Fixed width for images */
+  height: 100px; /* Square images for consistency */
+  object-fit: cover; /* Ensure images fit nicely */
+  border-radius: 8px; /* Rounded corners */
+  margin-right: 1.5rem;
+  border: 2px solid #ffe0d6; /* Light orange border for images */
+}
+
+.item-details {
+  flex: 1; /* Take remaining space */
+  color: #444444; /* Darker gray for readability */
+}
+
+.item-details h3 {
+  color: #ff8a65; /* Softer orange for product names */
+  font-size: 1.3rem;
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+}
+
+.item-details p {
+  margin: 0.3rem 0;
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+.item-details button {
+  background-color: #ff7043; /* Vibrant orange for buttons */
+  color: #ffffff; /* White text for contrast */
+  border: none;
+  border-radius: 8px;
+  padding: 0.5rem 1rem;
+  margin-right: 0.5rem;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.item-details button:hover {
+  background-color: #f4511e; /* Darker orange on hover */
+  transform: scale(1.05); /* Slight scale-up effect */
+}
+
+.item-details button:nth-child(3) {
+  background-color: #d9534f; /* Red for "Hapus" button */
+}
+
+.item-details button:nth-child(3):hover {
+  background-color: #c9302c; /* Darker red on hover */
+}
+
+.cart-total {
+  margin-top: 2rem;
+  text-align: right;
+  padding: 1.5rem;
+  background-color: #fef6e7; /* Light orange background for total section */
+  border-radius: 10px;
+}
+
+.cart-total h3 {
+  color: #ff7043; /* Orange for total text */
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+
+.cart-total button {
+  background-color: #ff8a65; /* Softer orange for checkout button */
+  color: #ffffff;
+  border: none;
+  border-radius: 10px;
+  padding: 0.75rem 2rem;
+  font-size: 1.1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.cart-total button:hover {
+  background-color: #ff7043; /* Brighter orange on hover */
+  transform: scale(1.05); /* Slight scale-up effect */
+}
+
+/* Responsive adjustments */
+@media (max-width: 576px) {
+  .cart-container {
+    padding: 1.5rem;
+    margin: 1rem;
+  }
+
+  .cart-container h2 {
+    font-size: 1.5rem;
+  }
+
+  .cart-item {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 1rem;
+  }
+
+  .item-image {
+    width: 80px;
+    height: 80px;
+    margin-bottom: 1rem;
+    margin-right: 0;
+  }
+
+  .item-details h3 {
+    font-size: 1.1rem;
+  }
+
+  .item-details button {
+    padding: 0.4rem 0.8rem;
+    font-size: 0.85rem;
+  }
+
+  .cart-total {
+    text-align: center;
+    padding: 1rem;
+  }
+
+  .cart-total button {
+    width: 100%;
+    padding: 0.6rem;
+  }
+}
