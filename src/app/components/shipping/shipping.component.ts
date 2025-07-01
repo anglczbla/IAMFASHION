@@ -8,7 +8,6 @@ import {
   ReactiveFormsModule,
 } from '@angular/forms';
 import * as bootstrap from 'bootstrap';
-import { RajaOngkirService } from '../../rajaongkir.service';
 import Swal from 'sweetalert2';
 // import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 
@@ -40,7 +39,7 @@ export class ShippingComponent implements OnInit {
   private http = inject(HttpClient);
   private fb = inject(FormBuilder);
 
-  constructor(private ongkirService: RajaOngkirService) {
+  constructor() {
     this.shippingForm = this.fb.group({
       payment_id: ['', Validators.required],
       shippingDate: [new Date()],
@@ -308,29 +307,25 @@ export class ShippingComponent implements OnInit {
       
       console.log('📦 Tracking data:', { waybill, courier });
 
-      this.ongkirService.cekResi(waybill, courier).subscribe({
-        next: (response) => {
-          console.log('✅ Tracking result:', response);
-          this.trackingResult = response;
-          this.isTracking = false;
+      // this.ongkirService.cekResi(waybill, courier).subscribe({
+      //   next: (response) => {
+      //     console.log('✅ Tracking result:', response);
+      //     this.trackingResult = response;
+      //     this.isTracking = false;
           
-          if (response.data && response.data.tracking) {
-            Swal.fire({
-              title: 'Tracking Result',
-              html: this.formatTrackingResult(response.data.tracking),
-              icon: 'info',
-              confirmButtonText: 'OK'
-            });
-          } else {
-            Swal.fire('Info', 'No tracking information found', 'info');
-          }
-        },
-        error: (err) => {
-          console.error('❌ Error tracking package:', err);
-          this.isTracking = false;
-          Swal.fire('Error', 'Error tracking package: ' + (err.error?.message || err.message), 'error');
-        }
-      });
+      //     if (response.data && response.data.tracking) {
+      //       Swal.fire({
+      //         title: 'Tracking Result',
+      //         html: this.formatTrackingResult(response.data.tracking),
+      //         icon: 'info',
+      //         confirmButtonText: 'OK'
+      //       });
+      //     } else {
+      //       Swal.fire('Info', 'No tracking information found', 'info');
+      //     }
+      //   },
+       
+      // });
     } else {
       console.warn('⚠️ Tracking form is invalid');
       Swal.fire('Warning', 'Please fill in waybill and courier', 'warning');
@@ -348,28 +343,28 @@ export class ShippingComponent implements OnInit {
     this.isTracking = true;
     console.log('📦 Tracking existing shipping:', { waybill: shipping.waybill, courier: shipping.courier });
 
-    this.ongkirService.cekResi(shipping.waybill, shipping.courier).subscribe({
-      next: (response) => {
-        console.log('✅ Tracking result for existing shipping:', response);
-        this.isTracking = false;
+    // this.ongkirService.cekResi(shipping.waybill, shipping.courier).subscribe({
+    //   next: (response) => {
+    //     console.log('✅ Tracking result for existing shipping:', response);
+    //     this.isTracking = false;
         
-        if (response.data && response.data.tracking) {
-          Swal.fire({
-            title: `Tracking: ${shipping.waybill}`,
-            html: this.formatTrackingResult(response.data.tracking),
-            icon: 'info',
-            confirmButtonText: 'OK'
-          });
-        } else {
-          Swal.fire('Info', 'No tracking information found', 'info');
-        }
-      },
-      error: (err) => {
-        console.error('❌ Error tracking existing shipping:', err);
-        this.isTracking = false;
-        Swal.fire('Error', 'Error tracking package: ' + (err.error?.message || err.message), 'error');
-      }
-    });
+    //     if (response.data && response.data.tracking) {
+    //       Swal.fire({
+    //         title: `Tracking: ${shipping.waybill}`,
+    //         html: this.formatTrackingResult(response.data.tracking),
+    //         icon: 'info',
+    //         confirmButtonText: 'OK'
+    //       });
+    //     } else {
+    //       Swal.fire('Info', 'No tracking information found', 'info');
+    //     }
+    //   },
+    //   error: (err) => {
+    //     console.error('❌ Error tracking existing shipping:', err);
+    //     this.isTracking = false;
+    //     Swal.fire('Error', 'Error tracking package: ' + (err.error?.message || err.message), 'error');
+    //   }
+    // });
   }
 
   formatTrackingResult(tracking: any): string {
