@@ -9,6 +9,8 @@ A modern and responsive fashion e-commerce website designed to deliver a stylish
 - 🔍 Product detail page with images, prices, and description
 - 🖼️ Upload product images (admin feature)
 - 📦 Track orders and manage stock
+- 🚚 Shipping management with city-based delivery options
+- 💳 Secure payment with multiple methods (admin & user)
 - 📱 Fully responsive design (mobile & desktop)
 - 🔐 User authentication & role-based access (admin/customer)
 
