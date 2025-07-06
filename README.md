@@ -2,6 +2,10 @@
 
 A modern and responsive fashion e-commerce website designed to deliver a stylish and seamless online shopping experience.
 
+![image](https://github.com/user-attachments/assets/a38189a2-24ce-4ecc-8a2a-d53f5aa45eee)
+![image](https://github.com/user-attachments/assets/89ed3dde-ace8-4fad-a8f0-d69585764a3f)
+
+
 ## ✨ Features
 
 - 🧥 Browse products by category (Men, Women, Kids etc.)
