@@ -23,7 +23,6 @@ interface SizeOrder {
   imports: [CommonModule, ReactiveFormsModule, RouterModule, FormsModule],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
-
 export class ProductsAnakComponent implements OnInit {
   products: any[] = [];
   productsForm!: FormGroup;
@@ -134,12 +133,16 @@ export class ProductsAnakComponent implements OnInit {
 
     const maxStock = this.getSizeStock(size);
     if (quantity > maxStock) {
-      Swal.fire('Error', `Maximum quantity available for size ${size} is ${maxStock}`, 'error');
+      Swal.fire(
+        'Error',
+        `Maximum quantity available for size ${size} is ${maxStock}`,
+        'error'
+      );
       return;
     }
 
     // Check if size already exists
-    const existingIndex = this.selectedSizes.findIndex(s => s.size === size);
+    const existingIndex = this.selectedSizes.findIndex((s) => s.size === size);
     if (existingIndex >= 0) {
       // Update quantity if size already exists
       this.selectedSizes[existingIndex].quantity = quantity;
@@ -154,17 +157,22 @@ export class ProductsAnakComponent implements OnInit {
   }
 
   removeSizeFromOrder(size: string): void {
-    this.selectedSizes = this.selectedSizes.filter(s => s.size !== size);
+    this.selectedSizes = this.selectedSizes.filter((s) => s.size !== size);
   }
 
   getSizeStock(size: string): number {
     if (!this.selectedProduct) return 0;
-    const sizeObj = this.selectedProduct.sizes?.find((s: any) => s.size === size);
+    const sizeObj = this.selectedProduct.sizes?.find(
+      (s: any) => s.size === size
+    );
     return sizeObj ? sizeObj.stok : 0;
   }
 
   getTotalQuantity(): number {
-    return this.selectedSizes.reduce((total, sizeOrder) => total + sizeOrder.quantity, 0);
+    return this.selectedSizes.reduce(
+      (total, sizeOrder) => total + sizeOrder.quantity,
+      0
+    );
   }
 
   getTotalPrice(): number {
@@ -233,17 +241,17 @@ export class ProductsAnakComponent implements OnInit {
           quantity,
           total,
           foto: product.foto || '',
-          size
-        }
+          size,
+        },
       ],
-      total: total
+      total: total,
     };
 
     console.log('Cart item to send:', cartItem);
 
     this.http
       .post<any>('https://be-iamfashion.vercel.app/api/cart', cartItem, {
-        headers: { Authorization: `Bearer ${token}` }
+        headers: { Authorization: `Bearer ${token}` },
       })
       .subscribe({
         next: (res) => {
@@ -251,8 +259,14 @@ export class ProductsAnakComponent implements OnInit {
         },
         error: (err) => {
           console.error('Error adding to cart:', err);
-          Swal.fire('Error', `Failed to add item to cart: ${err.error.message || 'Unknown error'}`, 'error');
-        }
+          Swal.fire(
+            'Error',
+            `Failed to add item to cart: ${
+              err.error.message || 'Unknown error'
+            }`,
+            'error'
+          );
+        },
       });
   }
 
@@ -339,10 +353,12 @@ export class ProductsAnakComponent implements OnInit {
       !this.selectedProduct ||
       this.selectedSizes.length === 0 ||
       !this.buyerName.trim()
-      
-    ) 
-    {
-      Swal.fire('Error', 'Please fill all required fields and select at least one size', 'error');
+    ) {
+      Swal.fire(
+        'Error',
+        'Please fill all required fields and select at least one size',
+        'error'
+      );
       return;
     }
 
@@ -350,7 +366,11 @@ export class ProductsAnakComponent implements OnInit {
     for (const sizeOrder of this.selectedSizes) {
       const maxStock = this.getSizeStock(sizeOrder.size);
       if (sizeOrder.quantity > maxStock) {
-        Swal.fire('Error', `Maximum quantity available for size ${sizeOrder.size} is ${maxStock}`, 'error');
+        Swal.fire(
+          'Error',
+          `Maximum quantity available for size ${sizeOrder.size} is ${maxStock}`,
+          'error'
+        );
         return;
       }
     }
@@ -364,32 +384,35 @@ export class ProductsAnakComponent implements OnInit {
     const totalQuantity = this.getTotalQuantity();
     const totalPrice = this.getTotalPrice();
 
+    // PERBAIKAN: Buat products_id array yang sesuai dengan sizes array
+    const products_id = this.selectedSizes.map(() => this.selectedProduct._id);
+
     const order = {
       nama: this.buyerName,
       order: new Date().toISOString(),
       total: totalPrice,
       jumlahOrder: totalQuantity,
-      products_id: [this.selectedProduct._id],
+      products_id: products_id, // Array dengan panjang yang sama dengan sizes
       userId: userId,
-      sizes: this.selectedSizes // Send sizes array
+      sizes: this.selectedSizes, // Send sizes array
     };
 
     const token = localStorage.getItem('authToken');
     const headers = { Authorization: `Bearer ${token}` };
 
     // Generate HTML for order confirmation
-    const sizesHtml = this.selectedSizes.map(sizeOrder => 
-      `Size ${sizeOrder.size}: ${sizeOrder.quantity} pcs`
-    ).join('<br>');
+    const sizesHtml = this.selectedSizes
+      .map((sizeOrder) => `Size ${sizeOrder.size}: ${sizeOrder.quantity} pcs`)
+      .join('<br>');
 
     Swal.fire({
       title: 'Confirm Order',
       html: `
-        <strong>${this.selectedProduct.nama}</strong><br>
-        ${sizesHtml}<br>
-        Total Quantity: ${totalQuantity}<br>
-        Total: Rp${totalPrice.toLocaleString()}
-      `,
+      <strong>${this.selectedProduct.nama}</strong><br>
+      ${sizesHtml}<br>
+      Total Quantity: ${totalQuantity}<br>
+      Total: Rp${totalPrice.toLocaleString()}
+    `,
       icon: 'question',
       showCancelButton: true,
       confirmButtonText: 'Order Now',
@@ -397,7 +420,9 @@ export class ProductsAnakComponent implements OnInit {
     }).then((result) => {
       if (result.isConfirmed) {
         this.http
-          .post<any>('https://be-iamfashion.vercel.app/api/orders', order, { headers })
+          .post<any>('https://be-iamfashion.vercel.app/api/orders', order, {
+            headers,
+          })
           .subscribe({
             next: (res) => {
               Swal.fire('Success!', 'Your order has been created.', 'success');
@@ -422,7 +447,6 @@ export class ProductsAnakComponent implements OnInit {
       }
     });
   }
-
   resetOrderForm(): void {
     this.selectedProduct = null;
     this.selectedSize = '';

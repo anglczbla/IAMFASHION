@@ -364,12 +364,15 @@ export class ProductsPriaComponent implements OnInit {
     const totalQuantity = this.getTotalQuantity();
     const totalPrice = this.getTotalPrice();
 
+    // PERBAIKAN: Buat products_id array yang sesuai dengan sizes array
+    const products_id = this.selectedSizes.map(() => this.selectedProduct._id);
+
     const order = {
       nama: this.buyerName,
       order: new Date().toISOString(),
       total: totalPrice,
       jumlahOrder: totalQuantity,
-      products_id: [this.selectedProduct._id],
+      products_id:products_id,
       userId: userId,
       sizes: this.selectedSizes // Send sizes array
     };
