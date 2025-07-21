@@ -9,59 +9,173 @@
     </button>
   </div>
 
-  <!-- Daftar Pemesanan -->
-  <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4 mt-3">
-    <div class="col" *ngFor="let item of orders">
-      <div class="card shadow-sm">
-        <div class="card-body">
-          <h5 class="card-title"></h5>
-          <p class="card-text">
-            <strong>Nama:</strong> {{ item.nama }}
-            <strong>Tanggal Order:</strong> {{ item.order | date : "dd/MM/yyyy"
-            }}<br />
-            <strong>Produk:</strong>
-          </p>
+  <!-- Loading Indicator -->
+  <div *ngIf="isLoading" class="text-center">
+    <div class="spinner-border" role="status">
+      <span class="visually-hidden">Loading...</span>
+    </div>
+  </div>
 
-          <ul
-            *ngIf="
-              item.products_id && item.products_id.length > 0;
-              else noProducts
-            "
-          >
-            <li *ngFor="let product of item.products_id">
-              <span
-                *ngIf="product && typeof product === 'object'; else productId"
-              >
-                {{ product.nama || product.title || "Nama tidak tersedia" }}
-              </span>
-              <ng-template #productId>
-                <span class="text-muted">Product ID: {{ product }}</span>
-              </ng-template>
-            </li>
-          </ul>
+  <!-- Orders Table -->
+  <div *ngIf="!isLoading" class="table-responsive">
+    <table class="table table-hover table-bordered">
+      <thead class="table-dark">
+        <tr>
+          <th scope="col">No</th>
+          <th scope="col">Nama</th>
+          <th scope="col">Tanggal Order</th>
+          <th scope="col">Total Item</th>
+          <th scope="col">Total Harga</th>
+          <th scope="col">Status</th>
+          <th scope="col">Aksi</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let item of orders; let i = index">
+          <td>{{ i + 1 }}</td>
+          <td>
+            <strong>{{ item.nama }}</strong>
+          </td>
+          <td>
+            {{ item.order | date : "dd/MM/yyyy HH:mm" }}
+          </td>
+          <td>
+            <span class="badge bg-info">{{ item.jumlahOrder }} item</span>
+          </td>
+          <td>
+            <strong class="text-success">{{ item.total | currency : "IDR" }}</strong>
+          </td>
+          <td>
+            <span class="badge bg-success">Selesai</span>
+          </td>
+          <td>
+            <button 
+              class="btn btn-outline-primary btn-sm me-1" 
+              (click)="viewOrderDetail(item)"
+              data-bs-toggle="modal" 
+              data-bs-target="#orderDetailModal">
+              <i class="fas fa-eye"></i> Detail
+            </button>
+            <button class="btn btn-warning btn-sm me-1" (click)="getOrderById(item._id)">
+              <i class="fas fa-edit"></i> Edit
+            </button>
+            <button class="btn btn-danger btn-sm" (click)="deleteOrder(item._id)">
+              <i class="fas fa-trash"></i> Delete
+            </button> 
+          </td>
+        </tr>
+        
+        <!-- Empty State -->
+        <tr *ngIf="orders.length === 0">
+          <td colspan="7" class="text-center py-4">
+            <div class="text-muted">
+              <i class="fas fa-inbox fa-3x mb-3"></i>
+              <p>Belum ada order yang tersedia</p>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
 
-          <ng-template #noProducts>
-            <p class="text-muted">Tidak ada produk yang ditemukan</p>
-          </ng-template>
-          <strong>Ukuran & Jumlah:</strong>
-          <ul>
-            <li *ngFor="let size of item.sizes">
-              {{ size.size }}: {{ size.quantity }}
-            </li>
-          </ul>
-          <strong>Jumlah Total Item:</strong> {{ item.jumlahOrder }}<br />
-          <strong>Total Harga:</strong> {{ item.total | currency : "IDR"
-          }}<br />
-          <strong>Dibuat Pada:</strong>
-          {{ item.createdAt | date : "dd/MM/yyyy HH:mm" }}
-
-          <!-- <button class="btn btn-warning me-2" (click)="getOrderById(item._id)">
-            Edit
-          </button> -->
-          <!-- <button class="btn btn-danger" (click)="deleteOrder(item._id)">
-            Delete
-          </button> -->
+<!-- Modal Detail Order -->
+<div class="modal fade" id="orderDetailModal" tabindex="-1" aria-labelledby="orderDetailModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header bg-primary text-white">
+        <h5 class="modal-title" id="orderDetailModalLabel">
+          <i class="fas fa-receipt me-2"></i>Detail Order
+        </h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body" *ngIf="selectedOrder">
+        <!-- Order Information -->
+        <div class="row mb-4">
+          <div class="col-md-6">
+            <div class="card border-0 bg-light">
+              <div class="card-body">
+                <h6 class="card-title text-primary">
+                  <i class="fas fa-user me-2"></i>Informasi Pembeli
+                </h6>
+                <p class="mb-1"><strong>Nama:</strong> {{ selectedOrder.nama }}</p>
+                <p class="mb-1"><strong>Tanggal Order:</strong> {{ selectedOrder.order | date : "dd/MM/yyyy HH:mm" }}</p>
+                <p class="mb-0"><strong>Dibuat:</strong> {{ selectedOrder.createdAt | date : "dd/MM/yyyy HH:mm" }}</p>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="card border-0 bg-light">
+              <div class="card-body">
+                <h6 class="card-title text-success">
+                  <i class="fas fa-money-bill-wave me-2"></i>Ringkasan Pembayaran
+                </h6>
+                <p class="mb-1"><strong>Total Item:</strong> {{ selectedOrder.jumlahOrder }}</p>
+                <p class="mb-0"><strong class="text-success">Total Harga:</strong> {{ selectedOrder.total | currency : "IDR" }}</p>
+              </div>
+            </div>
+          </div>
         </div>
+
+        <!-- Products Detail -->
+        <div class="mb-4">
+          <h6 class="text-primary mb-3">
+            <i class="fas fa-box me-2"></i>Detail Produk
+          </h6>
+          <div class="table-responsive">
+            <table class="table table-sm table-bordered">
+              <thead class="table-secondary">
+                <tr>
+                  <th>Produk</th>
+                  <th>Ukuran</th>
+                  <th>Jumlah</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let product of selectedOrder.products_id; let i = index">
+                  <td>
+                    <span *ngIf="product && typeof product === 'object'; else productIdTemplate">
+                      {{ product.nama || product.title || "Nama tidak tersedia" }}
+                    </span>
+                    <ng-template #productIdTemplate>
+                      <span class="text-muted">Product ID: {{ product }}</span>
+                    </ng-template>
+                  </td>
+                  <td>
+                    <span class="badge bg-secondary" *ngIf="selectedOrder.sizes && selectedOrder.sizes[i]">
+                      {{ selectedOrder.sizes[i].size || 'N/A' }}
+                    </span>
+                    <span class="badge bg-light text-dark" *ngIf="!selectedOrder.sizes || !selectedOrder.sizes[i]">
+                      N/A
+                    </span>
+                  </td>
+                  <td>
+                    <span class="badge bg-info" *ngIf="selectedOrder.sizes && selectedOrder.sizes[i]">
+                      {{ selectedOrder.sizes[i].quantity || 0 }}
+                    </span>
+                    <span class="badge bg-light text-dark" *ngIf="!selectedOrder.sizes || !selectedOrder.sizes[i]">
+                      0
+                    </span>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Additional Info -->
+        <div class="alert alert-info" role="alert">
+          <i class="fas fa-info-circle me-2"></i>
+          <strong>Status:</strong> Order telah berhasil diproses dan diselesaikan.
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+          <i class="fas fa-times me-2"></i>Tutup
+        </button>
+        <button type="button" class="btn btn-primary" onclick="window.print()">
+          <i class="fas fa-print me-2"></i>Print
+        </button>
       </div>
     </div>
   </div>

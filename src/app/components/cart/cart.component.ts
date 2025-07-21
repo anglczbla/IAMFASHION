@@ -9,7 +9,7 @@ import { FormsModule } from '@angular/forms';
   selector: 'app-cart',
   templateUrl: './cart.component.html',
   styleUrls: ['./cart.component.css'],
-  imports: [CommonModule, FormsModule]
+  imports: [CommonModule, FormsModule],
 })
 export class CartComponent implements OnInit {
   cart: any = { items: [], total: 0 };
@@ -29,18 +29,20 @@ export class CartComponent implements OnInit {
       return;
     }
 
-    const headers = new HttpHeaders().set('Authorization', `Bearer ${this.token}`);
-    this.http.get<any>(this.apiUrl, { headers })
-      .subscribe({
-        next: (data) => {
-          this.cart = data || { items: [], total: 0 };
-          console.log('Loaded cart:', this.cart); // Debug
-        },
-        error: (err) => {
-          console.error('Error loading cart:', err);
-          this.cart = { items: [], total: 0 };
-        }
-      });
+    const headers = new HttpHeaders().set(
+      'Authorization',
+      `Bearer ${this.token}`
+    );
+    this.http.get<any>(this.apiUrl, { headers }).subscribe({
+      next: (data) => {
+        this.cart = data || { items: [], total: 0 };
+        console.log('Loaded cart:', this.cart); // Debug
+      },
+      error: (err) => {
+        console.error('Error loading cart:', err);
+        this.cart = { items: [], total: 0 };
+      },
+    });
   }
 
   addToCart(productId: string, quantity: number) {
@@ -49,8 +51,12 @@ export class CartComponent implements OnInit {
       return;
     }
 
-    const headers = new HttpHeaders().set('Authorization', `Bearer ${this.token}`);
-    this.http.post<any>(`${this.apiUrl}`, { productId, quantity }, { headers })
+    const headers = new HttpHeaders().set(
+      'Authorization',
+      `Bearer ${this.token}`
+    );
+    this.http
+      .post<any>(`${this.apiUrl}`, { productId, quantity }, { headers })
       .subscribe({
         next: (data) => {
           this.cart = data || this.cart;
@@ -59,19 +65,32 @@ export class CartComponent implements OnInit {
         },
         error: (err) => {
           console.error('Error adding to cart:', err);
-          Swal.fire('Error!', err.error?.message || 'Gagal menambahkan ke keranjang.', 'error');
-        }
+          Swal.fire(
+            'Error!',
+            err.error?.message || 'Gagal menambahkan ke keranjang.',
+            'error'
+          );
+        },
       });
   }
 
-  removeFromCart(productId: string) {
+  removeFromCart(productId: string, size: string) {
     if (!this.token || !productId) {
       Swal.fire('Error!', 'Data tidak valid atau silakan login.', 'error');
       return;
     }
 
-    const headers = new HttpHeaders().set('Authorization', `Bearer ${this.token}`);
-    this.http.delete<any>(`${this.apiUrl}/${productId}`, { headers })
+    const headers = new HttpHeaders().set(
+      'Authorization',
+      `Bearer ${this.token}`
+    );
+
+    // Kirim size dalam request body untuk DELETE request
+    this.http
+      .request<any>('DELETE', `${this.apiUrl}/${productId}`, {
+        headers,
+        body: { size },
+      })
       .subscribe({
         next: (data) => {
           this.cart = data || this.cart;
@@ -80,182 +99,242 @@ export class CartComponent implements OnInit {
         },
         error: (err) => {
           console.error('Error removing from cart:', err);
-          Swal.fire('Error!', err.error?.message || 'Gagal menghapus dari keranjang.', 'error');
-        }
+          Swal.fire(
+            'Error!',
+            err.error?.message || 'Gagal menghapus dari keranjang.',
+            'error'
+          );
+        },
       });
   }
 
-  incrementItem(productId: string) {
+  incrementItem(productId: string, size: string) {
     if (!this.token || !productId) {
       Swal.fire('Error!', 'Data tidak valid atau silakan login.', 'error');
       return;
     }
 
-    const headers = new HttpHeaders().set('Authorization', `Bearer ${this.token}`);
-    this.http.put<any>(`${this.apiUrl}/increment/${productId}`, {}, { headers })
+    const headers = new HttpHeaders().set(
+      'Authorization',
+      `Bearer ${this.token}`
+    );
+    // Kirim size dalam request body
+    this.http
+      .put<any>(`${this.apiUrl}/increment/${productId}`, { size }, { headers })
       .subscribe({
         next: (data) => {
           this.cart = data || this.cart;
           Swal.fire('Sukses!', 'Jumlah produk bertambah.', 'success');
-          this.loadCart(); // Refresh cart
+          this.loadCart();
         },
         error: (err) => {
           console.error('Error incrementing item:', err);
-          Swal.fire('Error!', err.error?.message || 'Gagal menambah jumlah.', 'error');
-        }
+          Swal.fire(
+            'Error!',
+            err.error?.message || 'Gagal menambah jumlah.',
+            'error'
+          );
+        },
       });
   }
 
-  decrementItem(productId: string) {
+  decrementItem(productId: string, size: string) {
     if (!this.token || !productId) {
       Swal.fire('Error!', 'Data tidak valid atau silakan login.', 'error');
       return;
     }
 
-    const headers = new HttpHeaders().set('Authorization', `Bearer ${this.token}`);
-    this.http.put<any>(`${this.apiUrl}/decrement/${productId}`, {}, { headers })
+    const headers = new HttpHeaders().set(
+      'Authorization',
+      `Bearer ${this.token}`
+    );
+    this.http
+      .put<any>(`${this.apiUrl}/decrement/${productId}`, { size }, { headers })
       .subscribe({
         next: (data) => {
           this.cart = data || this.cart;
           Swal.fire('Sukses!', 'Jumlah produk berkurang.', 'success');
-          this.loadCart(); // Refresh cart
+          this.loadCart();
         },
         error: (err) => {
           console.error('Error decrementing item:', err);
-          Swal.fire('Error!', err.error?.message || 'Gagal mengurangi jumlah.', 'error');
-        }
+          Swal.fire(
+            'Error!',
+            err.error?.message || 'Gagal mengurangi jumlah.',
+            'error'
+          );
+        },
       });
   }
 
   checkout(): void {
-  if (!this.token) {
-    Swal.fire('Error!', 'Silakan login terlebih dahulu.', 'error');
-    return;
-  }
-
-  // Meminta nama pengguna saat checkout
-  Swal.fire({
-    title: 'Masukkan Nama Anda',
-    input: 'text',
-    inputPlaceholder: 'Nama Anda',
-    showCancelButton: true,
-    confirmButtonText: 'Lanjutkan',
-    cancelButtonText: 'Batal',
-    inputValidator: (value) => {
-      if (!value || value.trim() === '') {
-        return 'Nama tidak boleh kosong!';
-      }
-      return null;
+    if (!this.token) {
+      Swal.fire('Error!', 'Silakan login terlebih dahulu.', 'error');
+      return;
     }
-  }).then((result) => {
-    if (result.isConfirmed) {
-      const userName = result.value.trim();
 
-      // Validasi awal
-      if (!this.cart.items || this.cart.items.length === 0) {
-        Swal.fire('Error!', 'Keranjang kosong, tidak dapat checkout.', 'error');
-        return;
-      }
+    // Meminta nama pengguna saat checkout
+    Swal.fire({
+      title: 'Masukkan Nama Anda',
+      input: 'text',
+      inputPlaceholder: 'Nama Anda',
+      showCancelButton: true,
+      confirmButtonText: 'Lanjutkan',
+      cancelButtonText: 'Batal',
+      inputValidator: (value) => {
+        if (!value || value.trim() === '') {
+          return 'Nama tidak boleh kosong!';
+        }
+        return null;
+      },
+    }).then((result) => {
+      if (result.isConfirmed) {
+        const userName = result.value.trim();
 
-      const totalQuantity = this.cart.items.reduce((sum: number, item: any) => sum + (item.quantity || 0), 0);
-      if (totalQuantity <= 0) {
-        Swal.fire('Error!', 'Jumlah produk tidak valid.', 'error');
-        return;
-      }
+        // Validasi awal
+        if (!this.cart.items || this.cart.items.length === 0) {
+          Swal.fire(
+            'Error!',
+            'Keranjang kosong, tidak dapat checkout.',
+            'error'
+          );
+          return;
+        }
 
-      if (this.cart.total <= 0) {
-        Swal.fire('Error!', 'Total pembayaran tidak valid.', 'error');
-        return;
-      }
+        const totalQuantity = this.cart.items.reduce(
+          (sum: number, item: any) => sum + (item.quantity || 0),
+          0
+        );
+        if (totalQuantity <= 0) {
+          Swal.fire('Error!', 'Jumlah produk tidak valid.', 'error');
+          return;
+        }
 
-      // Validasi productId
-      const invalidItems = this.cart.items.some((item: any) => !item.productId || item.productId === '');
-      if (invalidItems) {
-        Swal.fire('Error!', 'Ada item dengan productId tidak valid.', 'error');
-        return;
-      }
+        if (this.cart.total <= 0) {
+          Swal.fire('Error!', 'Total pembayaran tidak valid.', 'error');
+          return;
+        }
 
-      // PERBAIKAN: Ekstrak sizes dengan productId dari cart.items
-      const sizes = this.cart.items.map((item: any) => ({
-        productId: item.productId, // TAMBAHKAN INI
-        size: item.size || 'N/A',
-        quantity: item.quantity || 1
-      }));
+        // Validasi productId
+        const invalidItems = this.cart.items.some(
+          (item: any) => !item.productId || item.productId === ''
+        );
+        if (invalidItems) {
+          Swal.fire(
+            'Error!',
+            'Ada item dengan productId tidak valid.',
+            'error'
+          );
+          return;
+        }
 
-      // Debug log untuk memastikan format data benar
-      console.log('Cart items:', this.cart.items);
-      console.log('Sizes with productId:', sizes);
+        // PERBAIKAN: Ekstrak sizes dengan productId dari cart.items
+        const sizes = this.cart.items.map((item: any) => ({
+          productId: item.productId, // TAMBAHKAN INI
+          size: item.size || 'N/A',
+          quantity: item.quantity || 1,
+        }));
 
-      // Format mata uang menggunakan Intl.NumberFormat
-      const formatter = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' });
-      const productDetails = this.cart.items.map((item: any) =>
-        `${item.nama} - Harga: ${formatter.format(item.harga)}, Ukuran: ${item.size || 'N/A'}, Jumlah: ${item.quantity}, Total: ${formatter.format(item.total)}`
-      ).join('<br>');
+        // Debug log untuk memastikan format data benar
+        console.log('Cart items:', this.cart.items);
+        console.log('Sizes with productId:', sizes);
 
-      // Konfirmasi pembelian dengan detail
-      Swal.fire({
-        title: 'Apakah Anda Yakin Ingin Membeli?',
-        html: `
+        // Format mata uang menggunakan Intl.NumberFormat
+        const formatter = new Intl.NumberFormat('id-ID', {
+          style: 'currency',
+          currency: 'IDR',
+        });
+        const productDetails = this.cart.items
+          .map(
+            (item: any) =>
+              `${item.nama} - Harga: ${formatter.format(item.harga)}, Ukuran: ${
+                item.size || 'N/A'
+              }, Jumlah: ${item.quantity}, Total: ${formatter.format(
+                item.total
+              )}`
+          )
+          .join('<br>');
+
+        // Konfirmasi pembelian dengan detail
+        Swal.fire({
+          title: 'Apakah Anda Yakin Ingin Membeli?',
+          html: `
           <p><strong>Nama Pembeli:</strong> ${userName}</p>
           <p><strong>Detail Produk:</strong></p>
           <div>${productDetails}</div>
-          <p><strong>Total Pembayaran:</strong> ${formatter.format(this.cart.total)}</p>
+          <p><strong>Total Pembayaran:</strong> ${formatter.format(
+            this.cart.total
+          )}</p>
         `,
-        icon: 'question',
-        showCancelButton: true,
-        confirmButtonText: 'Ya, Lanjutkan',
-        cancelButtonText: 'Batal',
-      }).then((confirmResult) => {
-        if (confirmResult.isConfirmed) {
-          const headers = new HttpHeaders().set('Authorization', `Bearer ${this.token}`);
-          const userId = localStorage.getItem('userId');
-          if (!userId) {
-            Swal.fire({
-              icon: 'error',
-              title: 'Error',
-              text: 'User ID tidak tersedia. Silakan login ulang.',
-            });
-            return;
+          icon: 'question',
+          showCancelButton: true,
+          confirmButtonText: 'Ya, Lanjutkan',
+          cancelButtonText: 'Batal',
+        }).then((confirmResult) => {
+          if (confirmResult.isConfirmed) {
+            const headers = new HttpHeaders().set(
+              'Authorization',
+              `Bearer ${this.token}`
+            );
+            const userId = localStorage.getItem('userId');
+            if (!userId) {
+              Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'User ID tidak tersedia. Silakan login ulang.',
+              });
+              return;
+            }
+
+            const order = {
+              nama: userName,
+              order: new Date(),
+              total: this.cart.total,
+              jumlahOrder: totalQuantity,
+              products_id: this.cart.items.map((item: any) => item.productId),
+              userId: userId,
+              sizes: sizes, // Sekarang sizes sudah include productId
+            };
+
+            // Debug log
+            console.log('Order data to send:', order);
+
+            this.http
+              .post<any>('https://be-iamfashion.vercel.app/api/orders', order, {
+                headers,
+              })
+              .subscribe({
+                next: (res) => {
+                  Swal.fire(
+                    'Berhasil!',
+                    'Pesanan Anda telah dibuat.',
+                    'success'
+                  );
+                  this.cart = { items: [], total: 0 }; // Kosongkan cart
+                  this.loadCart(); // Refresh cart
+                  this.router.navigate(['/payments'], {
+                    state: {
+                      orderId: res._id,
+                      totalPrice: res.total,
+                      buyerName: res.nama,
+                      product: res.products_id,
+                      orderQty: res.jumlahOrder,
+                      sizes: res.sizes, // Kirim sizes ke payment
+                    },
+                  });
+                },
+                error: (err) => {
+                  console.error('Error creating order:', err);
+                  Swal.fire(
+                    'Error!',
+                    err.error?.message || 'Gagal membuat pesanan.',
+                    'error'
+                  );
+                },
+              });
           }
-
-          const order = {
-            nama: userName,
-            order: new Date(),
-            total: this.cart.total,
-            jumlahOrder: totalQuantity,
-            products_id: this.cart.items.map((item: any) => item.productId),
-            userId: userId,
-            sizes: sizes // Sekarang sizes sudah include productId
-          };
-
-          // Debug log
-          console.log('Order data to send:', order);
-
-          this.http.post<any>('https://be-iamfashion.vercel.app/api/orders', order, { headers })
-            .subscribe({
-              next: (res) => {
-                Swal.fire('Berhasil!', 'Pesanan Anda telah dibuat.', 'success');
-                this.cart = { items: [], total: 0 }; // Kosongkan cart
-                this.loadCart(); // Refresh cart
-                this.router.navigate(['/payments'], {
-                  state: {
-                    orderId: res._id,
-                    totalPrice: res.total,
-                    buyerName: res.nama,
-                    product: res.products_id,
-                    orderQty: res.jumlahOrder,
-                    sizes: res.sizes // Kirim sizes ke payment
-                  },
-                });
-              },
-              error: (err) => {
-                console.error('Error creating order:', err);
-                Swal.fire('Error!', err.error?.message || 'Gagal membuat pesanan.', 'error');
-              }
-            });
-        }
-      });
-    }
-  });
-}
+        });
+      }
+    });
+  }
 }

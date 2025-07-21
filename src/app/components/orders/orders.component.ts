@@ -27,6 +27,9 @@ export class OrdersComponent implements OnInit {
   isLoading = true;
   isSubmitting = false;
   editOrderId: string | null = null;
+  
+  // Property untuk detail order
+  selectedOrder: any = null;
 
   apiOrdersUrl = 'https://be-iamfashion.vercel.app/api/orders'; // Set the correct API endpoint
   apiProductsUrl = 'https://be-iamfashion.vercel.app/api/products'; // Set the correct API endpoint
@@ -56,6 +59,19 @@ export class OrdersComponent implements OnInit {
   totalHarga: number = 0; // Variabel untuk menyimpan total harga
   showRecap: boolean = false;
   userRole: string | null = null;
+
+  /**
+   * Fungsi untuk melihat detail order
+   * @param order - Order yang akan ditampilkan detailnya
+   */
+  viewOrderDetail(order: any): void {
+    console.log('Selected order for detail:', order);
+    this.selectedOrder = { ...order }; // Clone object untuk menghindari reference issues
+    
+    // Debug log untuk memastikan data tersedia
+    console.log('Selected order products:', this.selectedOrder.products_id);
+    console.log('Selected order sizes:', this.selectedOrder.sizes);
+  }
 
   getRecap(type: 'daily' | 'weekly' | 'monthly'): void {
     this.isLoading = true;
@@ -122,23 +138,23 @@ export class OrdersComponent implements OnInit {
     this.getRecap('daily'); // Tampilkan rekap harian secara default saat tombol diklik
   }
 
- getOrders(): void {
-  this.isLoading = true;
-  this.http.get<any[]>(this.apiOrdersUrl).subscribe({
-    next: (data) => {
-      console.log('Raw orders data:', data);
-      console.log('First order structure:', data[0]);
-      console.log('Products in first order:', data[0]?.products_id);
-      this.orders = data;
-      this.isLoading = false;
-    },
-    error: (err) => {
-      console.error('Error fetching orders data:', err);
-      alert('Failed to fetch orders. Please try again later.');
-      this.isLoading = false;
-    },
-  });
-}
+  getOrders(): void {
+    this.isLoading = true;
+    this.http.get<any[]>(this.apiOrdersUrl).subscribe({
+      next: (data) => {
+        console.log('Raw orders data:', data);
+        console.log('First order structure:', data[0]);
+        console.log('Products in first order:', data[0]?.products_id);
+        this.orders = data;
+        this.isLoading = false;
+      },
+      error: (err) => {
+        console.error('Error fetching orders data:', err);
+        alert('Failed to fetch orders. Please try again later.');
+        this.isLoading = false;
+      },
+    });
+  }
 
   getProducts(): void {
     this.http.get<any[]>(this.apiProductsUrl).subscribe({
@@ -151,65 +167,67 @@ export class OrdersComponent implements OnInit {
       },
     });
   }
-addOrder(): void {
-  if (this.orderForm.valid) {
-    this.isSubmitting = true;
 
-    const token = localStorage.getItem('authToken');
-    const userId = localStorage.getItem('userId');
-    if (!userId) {
-      console.error('userId tidak ditemukan di localStorage');
-      Swal.fire({
-        icon: 'error',
-        title: 'Error',
-        text: 'User ID tidak tersedia. Silakan login ulang.',
-      });
-      this.isSubmitting = false;
-      return;
-    }
+  addOrder(): void {
+    if (this.orderForm.valid) {
+      this.isSubmitting = true;
 
-    const headers = { Authorization: `Bearer ${token}` };
-    const body = {
-      ...this.orderForm.value,
-      userId: userId, // Pastikan userId selalu disertakan
-    };
-
-    console.log('Data yang dikirim ke backend:', body); // Debug untuk memverifikasi
-
-    this.http.post(this.apiOrdersUrl, body, { headers }).subscribe({
-      next: (response) => {
-        console.log('Order successfully added:', response);
-        this.getOrders();
-        Swal.fire({
-          icon: 'success',
-          title: 'Order Successful',
-          text: 'Order data has been successfully saved.',
-        });
-        this.orderForm.reset();
-        this.isSubmitting = false;
-
-        const modalElement = document.getElementById('tambahOrderModal') as HTMLElement;
-        if (modalElement) {
-          const modalInstance = bootstrap.Modal.getInstance(modalElement) || new bootstrap.Modal(modalElement);
-          modalInstance.hide();
-          const backdrop = document.querySelector('.modal-backdrop');
-          if (backdrop) backdrop.remove();
-        }
-      },
-      error: (err) => {
-        console.error('Error adding order:', err);
-        this.isSubmitting = false;
+      const token = localStorage.getItem('authToken');
+      const userId = localStorage.getItem('userId');
+      if (!userId) {
+        console.error('userId tidak ditemukan di localStorage');
         Swal.fire({
           icon: 'error',
           title: 'Error',
-          text: 'Failed to add order: ' + err.message,
+          text: 'User ID tidak tersedia. Silakan login ulang.',
         });
-      },
-    });
-  } else {
-    console.log('Form tidak valid:', this.orderForm.errors);
+        this.isSubmitting = false;
+        return;
+      }
+
+      const headers = { Authorization: `Bearer ${token}` };
+      const body = {
+        ...this.orderForm.value,
+        userId: userId, // Pastikan userId selalu disertakan
+      };
+
+      console.log('Data yang dikirim ke backend:', body); // Debug untuk memverifikasi
+
+      this.http.post(this.apiOrdersUrl, body, { headers }).subscribe({
+        next: (response) => {
+          console.log('Order successfully added:', response);
+          this.getOrders();
+          Swal.fire({
+            icon: 'success',
+            title: 'Order Successful',
+            text: 'Order data has been successfully saved.',
+          });
+          this.orderForm.reset();
+          this.isSubmitting = false;
+
+          const modalElement = document.getElementById('tambahOrderModal') as HTMLElement;
+          if (modalElement) {
+            const modalInstance = bootstrap.Modal.getInstance(modalElement) || new bootstrap.Modal(modalElement);
+            modalInstance.hide();
+            const backdrop = document.querySelector('.modal-backdrop');
+            if (backdrop) backdrop.remove();
+          }
+        },
+        error: (err) => {
+          console.error('Error adding order:', err);
+          this.isSubmitting = false;
+          Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'Failed to add order: ' + err.message,
+          });
+        },
+      });
+    } else {
+      console.log('Form tidak valid:', this.orderForm.errors);
+    }
   }
-}
+
   deleteOrder(id: string): void {
     if (confirm('Apakah Anda yakin ingin menghapus data ini?')) {
       const token = localStorage.getItem('authToken');
@@ -224,16 +242,21 @@ addOrder(): void {
 
       this.http.delete(`${this.apiOrdersUrl}/${id}`, { headers }).subscribe({
         next: () => {
-          this.getProducts();
+          this.getOrders(); // Changed from getProducts() to getOrders()
           Swal.fire({
             icon: 'success',
             title: 'Orders Success to delete',
-            text: 'Orders data has been successfully saved.',
+            text: 'Orders data has been successfully deleted.',
           });
-          console.log(`Produk dengan ID ${id} berhasil dihapus`);
+          console.log(`Order dengan ID ${id} berhasil dihapus`);
         },
         error: (err) => {
-          console.error('Error deleting produk:', err);
+          console.error('Error deleting order:', err);
+          Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'Failed to delete order.',
+          });
         },
       });
     }
@@ -275,15 +298,13 @@ addOrder(): void {
             Swal.fire({
               icon: 'success',
               title: 'Orders Success to update',
-              text: 'Orders data has been successfully saved.',
+              text: 'Orders data has been successfully updated.',
             });
             this.isSubmitting = false;
-            this.closeModal('editPemesananModal');
 
             // Reset form dan state
             this.orderForm.reset();
             this.editOrderId = null;
-            this.isSubmitting = false;
 
             // Tutup modal jika ada
             const modalElement = document.getElementById(
@@ -297,6 +318,11 @@ addOrder(): void {
           error: (err) => {
             console.error('Error updating order:', err);
             this.isSubmitting = false;
+            Swal.fire({
+              icon: 'error',
+              title: 'Error',
+              text: 'Failed to update order.',
+            });
           },
         });
     }

@@ -12,9 +12,9 @@
         <p>Size: {{ item.size}}</p>
         <p>Jumlah: {{ item.quantity }}</p>
         <p>Total: Rp{{ item.total | number }}</p>
-        <button (click)="decrementItem(item.productId)">-</button>
-        <button (click)="incrementItem(item.productId)">+</button>
-        <button (click)="removeFromCart(item.productId)">Hapus</button>
+        <button (click)="decrementItem(item.productId, item.size)">-</button>
+        <button (click)="incrementItem(item.productId,item.size)">+</button>
+        <button (click)="removeFromCart(item.productId, item.size)">Hapus</button>
       </div>
     </div>
     <div class="cart-total">

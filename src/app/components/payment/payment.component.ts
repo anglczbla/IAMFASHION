@@ -235,27 +235,7 @@ export class PaymentComponent implements OnInit {
     });
   }
 
-  // method ini untuk cek update status:
-  // checkForStatusUpdates(): void {
-  //   const recentlyUpdated = this.userPayments.filter(payment => {
-  //     const updatedTime = new Date(payment.statusUpdatedAt);
-  //     const now = new Date();
-  //     const diffMinutes = (now.getTime() - updatedTime.getTime()) / (1000 * 60);
-  //     return diffMinutes < 60 && payment.status !== 'pending'; // Update dalam 1 jam terakhir
-  //   });
 
-  //   if (recentlyUpdated.length > 0) {
-  //     recentlyUpdated.forEach(payment => {
-  //       const statusText = payment.status === 'confirmed' ? 'dikonfirmasi' : 'ditolak';
-  //       Swal.fire({
-  //         title: 'Update Status Payment',
-  //         text: `Payment untuk Order #${payment.orders_id} telah ${statusText}`,
-  //         icon: payment.status === 'confirmed' ? 'success' : 'error',
-  //         timer: 5000
-  //       });
-  //     });
-  //   }
-  // }
 
   submitPayment(): void {
     if (this.paymentForm.valid) {
