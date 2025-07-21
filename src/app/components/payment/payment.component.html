@@ -12,11 +12,13 @@
       [formGroup]="paymentForm"
       (ngSubmit)="submitPayment()"
     >
-      <div class="modal-header">
-        <h5 class="modal-title" id="addPaymentLabel">Add Payment</h5>
+      <div class="modal-header bg-primary text-white">
+        <h5 class="modal-title" id="addPaymentLabel">
+          <i class="fas fa-plus me-2"></i>Add Payment
+        </h5>
         <button
           type="button"
-          class="btn-close"
+          class="btn-close btn-close-white"
           (click)="routerNavigate()"
           aria-label="Close"
         ></button>
@@ -303,10 +305,10 @@
           class="btn btn-secondary"
           (click)="routerNavigate()"
         >
-          Cancel
+          <i class="fas fa-times me-2"></i>Cancel
         </button>
         <button type="submit" class="btn btn-success" [disabled]="isSubmitting">
-          {{ isSubmitting ? "Processing..." : "Pay Now" }}
+          <i class="fas fa-check me-2"></i>{{ isSubmitting ? "Processing..." : "Pay Now" }}
         </button>
       </div>
     </form>
@@ -314,64 +316,83 @@
 </div>
 
 <!-- Daftar Pembayaran (Hanya untuk Admin) -->
-<div class="container mt-5" *ngIf="userRole === 'admin'">
-  <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4 mt-3">
-    <div class="col" *ngFor="let payment of payments">
-      <div class="card shadow-sm h-100">
-        <div class="card-body d-flex flex-column">
-          <h5 class="card-title">Payment For:</h5>
-          <p class="card-text mb-4">
-            <strong>Order:</strong> {{ payment.orders_id?.nama || payment.orders_id }}<br />
-            <strong>Country:</strong> {{ payment.country }}<br />
-            <strong>First Name:</strong> {{ payment.firstName }}<br />
-            <strong>Last Name:</strong> {{ payment.lastName }}<br />
-            <strong>Address:</strong> {{ payment.address }}<br />
-            <strong>Apartment, etc:</strong> {{ payment.apartment || "-" }}<br />
-            <strong>City:</strong> {{ payment.city }}<br />
-            <strong>Province:</strong> {{ payment.province }}<br />
-            <strong>Postal Code:</strong> {{ payment.postalCode }}<br />
-            <strong>Phone:</strong> {{ payment.phone }}<br />
-            <strong>Amount:</strong> Rp{{ payment.amount | number : "1.0-0" }}<br />
-            <strong>Metode:</strong> {{ payment.paymentMethod }}<br />
-            <strong>Status:</strong>
+<div class="softpink-bg mt-4 p-4 rounded" *ngIf="userRole === 'admin'">
+  <h2 class="text-center text-softpink mb-4">Daftar Pembayaran</h2>
+
+  <!-- Loading Indicator -->
+  <div *ngIf="isLoading" class="text-center">
+    <div class="spinner-border" role="status">
+      <span class="visually-hidden">Loading...</span>
+    </div>
+  </div>
+
+  <!-- Payments Table -->
+  <div *ngIf="!isLoading" class="table-responsive">
+    <table class="table table-hover table-bordered">
+      <thead class="table-dark">
+        <tr>
+          <th scope="col">No</th>
+          <th scope="col">Order</th>
+          <th scope="col">Nama</th>
+          <th scope="col">Tanggal Pembayaran</th>
+          <th scope="col">Jumlah</th>
+          <th scope="col">Metode</th>
+          <th scope="col">Status</th>
+          <th scope="col">Aksi</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let payment of payments; let i = index">
+          <td>{{ i + 1 }}</td>
+          <td>
+            <strong>{{ payment.orders_id?.nama || payment.orders_id }}</strong>
+          </td>
+          <td>
+            <strong>{{ payment.firstName }} {{ payment.lastName }}</strong>
+          </td>
+          <td>
+            {{ payment.paymentDate | date : "dd/MM/yyyy HH:mm" }}
+          </td>
+          <td>
+            <strong class="text-success">{{ payment.amount | currency : "IDR" }}</strong>
+          </td>
+          <td>
+            <span class="badge bg-info">{{ payment.paymentMethod }}</span>
+          </td>
+          <td>
             <span
+              class="badge"
               [ngClass]="{
-                'text-success': payment.status === 'berhasil' || payment.status === 'confirmed',
-                'text-warning': payment.status === 'pending',
-                'text-danger': payment.status === 'gagal' || payment.status === 'failed'
+                'bg-success': payment.status === 'berhasil' || payment.status === 'confirmed',
+                'bg-warning': payment.status === 'pending',
+                'bg-danger': payment.status === 'gagal' || payment.status === 'failed'
               }"
             >
               {{ payment.status === 'confirmed' ? 'Dikonfirmasi' : 
                  payment.status === 'failed' ? 'Ditolak' : 
                  payment.status | titlecase }}
-            </span><br />
-            <strong>Date:</strong> {{ payment.paymentDate | date : "short" }}
-            <button
-              *ngIf="payment.proof"
-              class="btn btn-sm btn-info me-1"
-              (click)="viewProof(payment.proof)"
-            >
-              View Proof
+            </span>
+          </td>
+          <td>
+            <button 
+              class="btn btn-outline-primary btn-sm me-1" 
+              (click)="viewPaymentDetail(payment)"
+              data-bs-toggle="modal" 
+              data-bs-target="#paymentDetailModal">
+              <i class="fas fa-eye"></i> Detail
             </button>
-            <span *ngIf="!payment.proof" class="text-muted">No proof</span>
-          </p>
-          <!-- Tambahkan tombol Konfirmasi dan Tolak di dalam card -->
-          <div class="mt-auto d-flex justify-content-between align-items-center">
-            <ng-container>
-              <button 
-                class="btn btn-sm btn-success me-2"
-                (click)="updatePaymentStatus(payment._id, 'confirmed')"
-                [disabled]="payment.status === 'confirmed' || payment.status === 'berhasil'">
-                Konfirmasi
-              </button>
-              <button 
-                class="btn btn-sm btn-danger"
-                (click)="updatePaymentStatus(payment._id, 'failed')"
-                [disabled]="payment.status === 'failed' || payment.status === 'gagal'">
-                Tolak
-              </button>
-            </ng-container>
-            <div>
+            <button 
+              class="btn btn-sm btn-success me-1"
+              (click)="updatePaymentStatus(payment._id, 'confirmed')"
+              [disabled]="payment.status === 'confirmed' || payment.status === 'berhasil'">
+              <i class="fas fa-check"></i> Konfirmasi
+            </button>
+            <button 
+              class="btn btn-sm btn-danger"
+              (click)="updatePaymentStatus(payment._id, 'failed')"
+              [disabled]="payment.status === 'failed' || payment.status === 'gagal'">
+              <i class="fas fa-times"></i> Tolak
+            </button>
               <button
                 type="button"
                 class="btn btn-warning mt-3 me-2"
@@ -379,18 +400,20 @@
               >
                 Tracking
               </button>
+          </td>
+        </tr>
+        
+        <!-- Empty State -->
+        <tr *ngIf="payments.length === 0">
+          <td colspan="8" class="text-center py-4">
+            <div class="text-muted">
+              <i class="fas fa-inbox fa-3x mb-3"></i>
+              <p>Belum ada data pembayaran yang tersedia</p>
             </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-  <div
-    *ngIf="payments.length === 0 && userRole === 'admin'"
-    class="alert alert-info mt-4"
-    role="alert"
-  >
-    Belum ada data pembayaran yang tersedia.
+          </td>
+        </tr>
+      </tbody>
+    </table>
   </div>
 </div>
 <div
@@ -401,3 +424,122 @@
   Anda tidak memiliki izin untuk melihat daftar pembayaran.
 </div>
 
+<!-- Modal Detail Pembayaran -->
+<div class="modal fade" id="paymentDetailModal" tabindex="-1" aria-labelledby="paymentDetailModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header bg-primary text-white">
+        <h5 class="modal-title" id="paymentDetailModalLabel">
+          <i class="fas fa-receipt me-2"></i>Detail Pembayaran
+        </h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body" *ngIf="selectedPayment">
+        <!-- Payment Information -->
+        <div class="row mb-4">
+          <div class="col-md-6">
+            <div class="card border-0 bg-light">
+              <div class="card-body">
+                <h6 class="card-title text-primary">
+                  <i class="fas fa-user me-2"></i>Informasi Pembeli
+                </h6>
+                <p class="mb-1"><strong>Nama:</strong> {{ selectedPayment.firstName }} {{ selectedPayment.lastName }}</p>
+                <p class="mb-1"><strong>Order:</strong> {{ selectedPayment.orders_id?.nama || selectedPayment.orders_id }}</p>
+                <p class="mb-1"><strong>Tanggal Pembayaran:</strong> {{ selectedPayment.paymentDate | date : "dd/MM/yyyy HH:mm" }}</p>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="card border-0 bg-light">
+              <div class="card-body">
+                <h6 class="card-title text-success">
+                  <i class="fas fa-money-bill-wave me-2"></i>Ringkasan Pembayaran
+                </h6>
+                <p class="mb-1"><strong>Jumlah:</strong> {{ selectedPayment.amount | currency : "IDR" }}</p>
+                <p class="mb-1"><strong>Metode:</strong> {{ selectedPayment.paymentMethod }}</p>
+                <p class="mb-0"><strong>Status:</strong> 
+                  <span
+                    [ngClass]="{
+                      'text-success': selectedPayment.status === 'berhasil' || selectedPayment.status === 'confirmed',
+                      'text-warning': selectedPayment.status === 'pending',
+                      'text-danger': selectedPayment.status === 'gagal' || selectedPayment.status === 'failed'
+                    }"
+                  >
+                    {{ selectedPayment.status === 'confirmed' ? 'Dikonfirmasi' : 
+                       selectedPayment.status === 'failed' ? 'Ditolak' : 
+                       selectedPayment.status | titlecase }}
+                  </span>
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Delivery Details -->
+        <div class="mb-4">
+          <h6 class="text-primary mb-3">
+            <i class="fas fa-truck me-2"></i>Detail Pengiriman
+          </h6>
+          <div class="table-responsive">
+            <table class="table table-sm table-bordered">
+              <thead class="table-secondary">
+                <tr>
+                  <th>Negara</th>
+                  <th>Alamat</th>
+                  <th>Apartemen</th>
+                  <th>Kota</th>
+                  <th>Provinsi</th>
+                  <th>Kode Pos</th>
+                  <th>Telepon</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>{{ selectedPayment.country }}</td>
+                  <td>{{ selectedPayment.address }}</td>
+                  <td>{{ selectedPayment.apartment || '-' }}</td>
+                  <td>{{ selectedPayment.city }}</td>
+                  <td>{{ selectedPayment.province }}</td>
+                  <td>{{ selectedPayment.postalCode }}</td>
+                  <td>{{ selectedPayment.phone }}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Proof of Payment -->
+        <div class="mb-4">
+          <h6 class="text-primary mb-3">
+            <i class="fas fa-file-invoice me-2"></i>Bukti Pembayaran
+          </h6>
+          <div *ngIf="selectedPayment.proof" class="mt-2">
+            <button
+              class="btn btn-sm btn-info me-1"
+              (click)="viewProof(selectedPayment.proof)"
+            >
+              View Proof
+            </button>
+          </div>
+          <div *ngIf="!selectedPayment.proof" class="text-muted">
+            No proof available
+          </div>
+        </div>
+
+        <!-- Additional Info -->
+        <div class="alert alert-info" role="alert">
+          <i class="fas fa-info-circle me-2"></i>
+          <strong>Status:</strong> Pembayaran telah diproses.
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+          <i class="fas fa-times me-2"></i>Tutup
+        </button>
+        <button type="button" class="btn btn-primary" onclick="window.print()">
+          <i class="fas fa-print me-2"></i>Print
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

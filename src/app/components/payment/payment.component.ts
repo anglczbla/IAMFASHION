@@ -34,6 +34,7 @@ export class PaymentComponent implements OnInit {
   userPayments: any[] = [];
   showStatusModal = false;
   selectedPaymentForStatus: any = null;
+  selectedPayment: any = null;
 
   apiPaymentsUrl = 'https://be-iamfashion.vercel.app/api/payments';
   apiOrdersUrl = 'https://be-iamfashion.vercel.app/api/orders';
@@ -462,6 +463,11 @@ export class PaymentComponent implements OnInit {
       link.click();
       document.body.removeChild(link);
     }
+  }
+
+    viewPaymentDetail(payment: any): void {
+    console.log('Selected payment for detail:', payment);
+    this.selectedPayment = { ...payment }; 
   }
 
   openModal(modalId: string): void {
